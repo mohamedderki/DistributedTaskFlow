@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TaskFlow Dashboard - Create New Task</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed": "#dae2fd",
+                    "surface-variant": "#d3e4fe",
+                    "on-secondary": "#ffffff",
+                    "inverse-primary": "#c3c0ff",
+                    "on-primary-container": "#dad7ff",
+                    "primary-container": "#4f46e5",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#0f0069",
+                    "background": "#f8f9ff",
+                    "surface-bright": "#f8f9ff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "surface-container-low": "#eff4ff",
+                    "surface-tint": "#4d44e3",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#7b2f00",
+                    "error": "#ba1a1a",
+                    "surface-container-high": "#dce9ff",
+                    "on-surface": "#0b1c30",
+                    "on-primary-fixed-variant": "#3323cc",
+                    "outline-variant": "#c7c4d8",
+                    "on-secondary-container": "#5c647a",
+                    "surface-container-highest": "#d3e4fe",
+                    "secondary-container": "#dae2fd",
+                    "tertiary": "#7e3000",
+                    "primary-fixed": "#e2dfff",
+                    "primary-fixed-dim": "#c3c0ff",
+                    "tertiary-fixed-dim": "#ffb695",
+                    "tertiary-container": "#a44100",
+                    "outline": "#777587",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-error": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed": "#131b2e",
+                    "tertiary-fixed": "#ffdbcc",
+                    "secondary": "#565e74",
+                    "surface-dim": "#cbdbf5",
+                    "surface-container": "#e5eeff",
+                    "inverse-surface": "#213145",
+                    "primary": "#3525cd",
+                    "on-tertiary-fixed": "#351000",
+                    "on-surface-variant": "#464555",
+                    "on-tertiary-container": "#ffd2be",
+                    "surface": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "on-background": "#0b1c30",
+                    "secondary-fixed-dim": "#bec6e0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "gutter": "24px",
+                    "xs": "4px",
+                    "md": "16px",
+                    "margin-desktop": "40px",
+                    "margin-mobile": "16px",
+                    "sm": "8px",
+                    "lg": "24px",
+                    "xl": "32px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "display": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "display": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .modal-overlay {
+            backdrop-filter: blur(4px);
+            background-color: rgba(11, 28, 48, 0.4);
+        }
+        input:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #3525cd;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- Sidebar Navigation (Desktop) -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant p-md">
+<div class="mb-xl px-sm">
+<h1 class="font-headline-md text-headline-md text-primary font-bold">TaskFlow Pro</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Personal Workspace</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Active Tab: Overview -->
+<a class="flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-transform scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Overview</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+<span class="font-label-md text-label-md">My Tasks</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-md text-label-md">Team</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="archive">archive</span>
+<span class="font-label-md text-label-md">Archive</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto space-y-md">
+<button class="w-full py-md bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">
+                Upgrade Plan
+            </button>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Help Center</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 min-h-screen">
+<!-- Top Nav Bar -->
+<header class="w-full h-16 bg-surface border-b border-outline-variant flex justify-between items-center px-margin-desktop sticky top-0 z-10">
+<div class="flex items-center gap-xl">
+<span class="font-headline-md text-headline-md font-bold text-primary">TaskFlow</span>
+<nav class="hidden lg:flex items-center gap-lg">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">Dashboard</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Tasks</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Calendar</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Projects</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-outline material-symbols-outlined text-[20px]">search</span>
+<input class="pl-10 pr-md py-sm bg-surface-container-low border border-outline-variant rounded-full text-body-md w-64 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Search tasks..." type="text"/>
+</div>
+<button class="material-symbols-outlined p-sm text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors">notifications</button>
+<button class="material-symbols-outlined p-sm text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors">settings</button>
+<div class="w-8 h-8 rounded-full overflow-hidden ml-sm ring-1 ring-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a diverse tech worker in a bright, modern office setting. The person has a warm, confident expression and is looking directly at the camera. Soft natural lighting from a nearby window creates a clean, corporate modern aesthetic with a palette of soft blues and greys in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACB5PoCSrKz3oJtLb30CgG0eRnw3Iw28eG84kVQnp2MIZp_ydxyJT2kiDnJg7MlflchKs-Kpn9buhBx0Odq7uPtKUViNP1tvgiQH7EAYslWsckxMFx8JfUs8n6ysCCpEQoSJQKSLO2F4Vnj2jPJRhDB-xUR6IJ6vyE4cBdgNaJKgkTBfm7EyYwcHjRzi2oeARrZr-d5JyURiGh0WOl6BbnabrLIlf_KJwkVMHc2U0lea-tInw51Mza8Q"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Body Content -->
+<div class="p-margin-desktop max-w-[1440px] mx-auto">
+<div class="flex justify-between items-end mb-xl">
+<div>
+<h2 class="font-display text-display text-on-surface mb-xs">Welcome back, Alex</h2>
+<p class="text-body-lg text-on-surface-variant">You have 5 tasks to finish today. Let's get to work!</p>
+</div>
+<button class="px-xl py-md bg-primary text-on-primary rounded-lg font-headline-md font-bold hover:opacity-90 shadow-lg flex items-center gap-sm transition-transform active:scale-95">
+<span class="material-symbols-outlined">add</span>
+                    Add Task
+                </button>
+</div>
+<!-- Bento Grid Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-lg mb-xl">
+<div class="md:col-span-2 bg-surface-container-lowest border border-outline-variant p-lg rounded-xl flex flex-col justify-between overflow-hidden relative group">
+<div class="z-10">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-sm">Completion Rate</p>
+<h3 class="font-display text-display text-primary">84%</h3>
+<p class="text-body-md text-on-surface-variant mt-sm">Your productivity is up 12% from last week.</p>
+</div>
+<!-- Micro interaction visual background -->
+<div class="absolute right-0 bottom-0 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-[120px] translate-x-8 translate-y-8">trending_up</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-sm">Active Tasks</p>
+<h3 class="font-display text-display text-on-surface">12</h3>
+<div class="mt-md flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-primary-container flex items-center justify-center text-[10px] text-on-primary">JS</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-tertiary-container flex items-center justify-center text-[10px] text-on-tertiary-container">UI</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-secondary-container flex items-center justify-center text-[10px] text-on-secondary-container">QA</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-sm">Overdue</p>
+<h3 class="font-display text-display text-error">2</h3>
+<p class="text-label-md text-error mt-sm flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                        Needs attention
+                    </p>
+</div>
+</div>
+<!-- Task List -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+<div class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+<h4 class="font-headline-md text-headline-md text-on-surface">Recent Tasks</h4>
+<button class="text-primary font-label-md text-label-md hover:underline">View All</button>
+</div>
+<div class="divide-y divide-outline-variant">
+<!-- Task Row 1 -->
+<div class="px-lg py-md flex items-center gap-md hover:bg-surface-container transition-colors cursor-pointer">
+<div class="w-6 h-6 border-2 border-outline rounded flex items-center justify-center text-transparent hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div class="flex-1">
+<h5 class="text-body-lg font-semibold text-on-surface">Design System Documentation</h5>
+<p class="text-body-md text-on-surface-variant">Update the primary color palette tokens</p>
+</div>
+<span class="px-sm py-1 bg-primary/10 text-primary rounded-full text-label-sm font-label-sm">High</span>
+<div class="text-right ml-lg">
+<p class="text-body-md text-on-surface-variant">Today</p>
+</div>
+</div>
+<!-- Task Row 2 -->
+<div class="px-lg py-md flex items-center gap-md hover:bg-surface-container transition-colors cursor-pointer">
+<div class="w-6 h-6 border-2 border-outline rounded flex items-center justify-center text-transparent hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div class="flex-1">
+<h5 class="text-body-lg font-semibold text-on-surface">Team Sync Meeting</h5>
+<p class="text-body-md text-on-surface-variant">Discuss Q3 project roadmap and deliverables</p>
+</div>
+<span class="px-sm py-1 bg-secondary/10 text-secondary rounded-full text-label-sm font-label-sm">Medium</span>
+<div class="text-right ml-lg">
+<p class="text-body-md text-on-surface-variant">Tomorrow</p>
+</div>
+</div>
+<!-- Task Row 3 -->
+<div class="px-lg py-md flex items-center gap-md hover:bg-surface-container transition-colors cursor-pointer">
+<div class="w-6 h-6 border-2 border-outline rounded flex items-center justify-center text-transparent hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div class="flex-1">
+<h5 class="text-body-lg font-semibold text-on-surface">Bug Report #1284</h5>
+<p class="text-body-md text-on-surface-variant">Fix mobile navigation overflow issues</p>
+</div>
+<span class="px-sm py-1 bg-error/10 text-error rounded-full text-label-sm font-label-sm">Critical</span>
+<div class="text-right ml-lg">
+<p class="text-error font-semibold text-body-md">Overdue</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Modal Overlay Container -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-md modal-overlay" id="modal-container">
+<!-- Modal Content -->
+<div class="bg-surface-container-lowest w-full max-w-[480px] rounded-xl shadow-xl border border-outline-variant overflow-hidden animate-in fade-in zoom-in duration-300">
+<!-- Modal Header -->
+<div class="px-xl pt-xl pb-md border-b border-outline-variant flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Create New Task</h3>
+<p class="text-body-md text-on-surface-variant mt-xs">Add details for your upcoming assignment.</p>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-variant p-sm rounded-full transition-colors" onclick="closeModal()">close</button>
+</div>
+<!-- Modal Form Body -->
+<form class="p-xl space-y-lg" id="taskForm" onsubmit="handleFormSubmit(event)">
+<!-- Validation Placeholder -->
+<div class="hidden px-md py-sm bg-error-container text-on-error-container rounded-lg text-body-md flex items-center gap-sm" id="validation-area">
+<span class="material-symbols-outlined text-[18px]">error</span>
+<span id="error-message">Please fill in all required fields.</span>
+</div>
+<div class="space-y-sm">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider block" for="taskTitle">Task Title</label>
+<input class="w-full px-md py-sm border border-outline-variant rounded-lg bg-surface text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary focus:border-transparent transition-all" id="taskTitle" name="title" placeholder="e.g., Update brand guidelines" required="" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<div class="space-y-sm">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider block" for="priority">Priority</label>
+<select class="w-full px-md py-sm border border-outline-variant rounded-lg bg-surface text-on-surface focus:ring-2 focus:ring-primary transition-all" id="priority" name="priority">
+<option value="low">Low</option>
+<option selected="" value="medium">Medium</option>
+<option value="high">High</option>
+</select>
+</div>
+<div class="space-y-sm">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider block" for="dueDate">Due Date</label>
+<input class="w-full px-md py-sm border border-outline-variant rounded-lg bg-surface text-on-surface focus:ring-2 focus:ring-primary transition-all" id="dueDate" name="date" required="" type="date"/>
+</div>
+</div>
+<!-- Spacer -->
+<div class="h-2"></div>
+<!-- Action Buttons -->
+<div class="flex items-center justify-end gap-md pt-md">
+<button class="px-lg py-sm border border-outline text-on-surface hover:bg-surface-variant rounded-lg font-label-md text-label-md transition-colors" onclick="closeModal()" type="button">
+                        Cancel
+                    </button>
+<button class="px-xl py-sm bg-primary text-on-primary rounded-lg font-label-md text-label-md shadow-md hover:bg-primary-container transition-all hover:scale-[1.02] active:scale-95" type="submit">
+                        Save Task
+                    </button>
+</div>
+</form>
+</div>
+</div>
+<!-- Scripts for Micro-interactions -->
+<script>
+        function closeModal() {
+            const modal = document.getElementById('modal-container');
+            modal.classList.add('opacity-0');
+            modal.classList.add('pointer-events-none');
+            setTimeout(() => {
+                // In a real app, this might navigate away or remove the element
+                console.log('Modal closed');
+            }, 300);
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const validationArea = document.getElementById('validation-area');
+            const title = document.getElementById('taskTitle').value;
+            const date = document.getElementById('dueDate').value;
+
+            if (!title || !date) {
+                validationArea.classList.remove('hidden');
+                document.getElementById('error-message').innerText = "All fields are required before saving.";
+                return;
+            }
+
+            // Mock success behavior
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            submitBtn.innerText = "Saving...";
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                closeModal();
+                alert('Task "' + title + '" has been added successfully!');
+                location.reload(); // Just to reset state for the demo
+            }, 800);
+        }
+
+        // Set default date to tomorrow for the date picker
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('dueDate').valueAsDate = tomorrow;
+    </script>
+</body></html>
