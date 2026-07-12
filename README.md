@@ -77,9 +77,14 @@ Das Projekt demonstriert folgende Prinzipien und Patterns:
 
 - Schritt 01: Google-Stitch-UI-Design wurde erstellt und dokumentiert.
 - Schritt 02: Projektplanung und Systemarchitektur wurden dokumentiert.
+- Schritt 03: Die Backend-Solution `backend/TaskFlow.sln` wurde erstellt.
+- Das Projekt `TaskFlow.TaskApi` wurde erstellt.
+- Das Projekt `TaskFlow.AnalyticsApi` wurde erstellt.
+- Beide API-Projekte wurden der Solution hinzugefügt.
+- Die lokalen Entwicklungsports wurden konfiguriert: Task API auf `http://localhost:5001`, Analytics API auf `http://localhost:5002`.
+- Die vollständige Backend-Solution wurde erfolgreich gebaut.
 - Die Next.js-Anwendung wurde noch nicht erstellt.
-- Die ASP.NET-Core-APIs wurden noch nicht erstellt.
-- Es wurde noch kein Implementierungscode hinzugefügt.
+- Es wurden noch keine Anwendungsfunktionen implementiert.
 
 ## Dokumentation
 
