@@ -1,0 +1,40 @@
+@TaskFlow_TaskApi_HostAddress = http://localhost:5001
+@TaskId = 1
+
+### Root endpoint
+GET {{TaskFlow_TaskApi_HostAddress}}/
+
+### Create a task
+POST {{TaskFlow_TaskApi_HostAddress}}/api/tasks
+Content-Type: application/json
+
+{
+  "title": "Prepare software architecture diagram",
+  "priority": "High",
+  "dueDate": "2026-07-20"
+}
+
+### Retrieve all tasks
+GET {{TaskFlow_TaskApi_HostAddress}}/api/tasks
+
+### Filter open tasks
+GET {{TaskFlow_TaskApi_HostAddress}}/api/tasks?status=open
+
+### Search tasks
+GET {{TaskFlow_TaskApi_HostAddress}}/api/tasks?search=architecture
+
+### Update a task
+PUT {{TaskFlow_TaskApi_HostAddress}}/api/tasks/{{TaskId}}
+Content-Type: application/json
+
+{
+  "title": "Complete project documentation",
+  "priority": "Medium",
+  "dueDate": "2026-07-22"
+}
+
+### Toggle completion
+PATCH {{TaskFlow_TaskApi_HostAddress}}/api/tasks/{{TaskId}}/toggle
+
+### Delete a task
+DELETE {{TaskFlow_TaskApi_HostAddress}}/api/tasks/{{TaskId}}

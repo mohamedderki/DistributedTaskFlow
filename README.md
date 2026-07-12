@@ -83,8 +83,15 @@ Das Projekt demonstriert folgende Prinzipien und Patterns:
 - Beide API-Projekte wurden der Solution hinzugefügt.
 - Die lokalen Entwicklungsports wurden konfiguriert: Task API auf `http://localhost:5001`, Analytics API auf `http://localhost:5002`.
 - Die vollständige Backend-Solution wurde erfolgreich gebaut.
+- Schritt 04: Die Task-API-Modelle wurden erstellt.
+- Die SQLite-Persistenz wurde in der Task API mit `Microsoft.Data.Sqlite` implementiert.
+- Das Repository Pattern wurde für den Zugriff auf Aufgaben umgesetzt.
+- Der `TaskService` wurde als Service Layer mit zentraler Validierung implementiert.
+- Dependency Injection wurde für Repository und Service konfiguriert.
+- Die Task-Management-Endpunkte unter `/api/tasks` wurden implementiert.
+- Die Analytics API ist noch nicht mit der Task API verbunden.
 - Die Next.js-Anwendung wurde noch nicht erstellt.
-- Es wurden noch keine Anwendungsfunktionen implementiert.
+- Die Statistikberechnung wurde noch nicht implementiert.
 
 ## Dokumentation
 
