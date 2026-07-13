@@ -97,7 +97,15 @@ Das Projekt demonstriert folgende Prinzipien und Patterns:
 - Der verteilte Dashboard-Endpunkt `/api/dashboard` wurde implementiert.
 - Die Task API bleibt nutzbar, wenn die Analytics API nicht verfügbar ist.
 - Die vollständige Backend-Solution wurde erfolgreich gebaut.
-- Swagger UI wird im nächsten Backend-Schritt ergänzt.
+- Schritt 06: Swagger UI ist für beide APIs verfügbar.
+- Beide APIs stellen OpenAPI-Dokumentation bereit.
+- Alle wichtigen Endpunkte sind interaktiv über Swagger UI testbar.
+- Task API Swagger ist unter `http://localhost:5001/swagger` verfügbar.
+- Analytics API Swagger ist unter `http://localhost:5002/swagger` verfügbar.
+- Die NuGet-Paketprüfung auf bekannte Sicherheitslücken wurde abgeschlossen.
+- Die vollständige Backend-Solution wurde erfolgreich mit `0 Warnung(en)` und `0 Fehler` gebaut.
+- Die Backend-Implementierung ist abgeschlossen.
+- Die Frontend-Implementierung ist der nächste Projektschritt.
 - Die Next.js-Anwendung wurde noch nicht erstellt.
 
 ## Dokumentation
@@ -109,3 +117,4 @@ Das Projekt demonstriert folgende Prinzipien und Patterns:
 - [Entwicklungsschritt 01: UI-Design mit Google Stitch](docs/steps/01-google-stitch-design.md)
 - [Entwicklungsschritt 02: Projektplanung und Architektur](docs/steps/02-project-planning.md)
 - [Entwicklungsschritt 05: Analytics API und verteilte Kommunikation](docs/steps/05-analytics-distributed-communication.md)
+- [Entwicklungsschritt 06: Swagger UI für beide APIs](docs/steps/06-swagger-ui.md)
