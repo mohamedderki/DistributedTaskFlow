@@ -2,170 +2,333 @@
 
 ## Ziel
 
-Vor Beginn der Frontend-Implementierung wurde mit Google Stitch ein visuelles Design für die TaskFlow-Webanwendung erstellt.
+Vor Beginn der technischen Implementierung wurde mit **Google Stitch** ein vollständiges visuelles Konzept für die TaskFlow-Webanwendung erstellt.
 
-In dieser Phase wurden folgende Punkte festgelegt:
+Ziel dieses Schritts war es, frühzeitig festzulegen:
 
-- Seitenaufbau
-- visuelles Erscheinungsbild
-- wiederverwendbare UI-Komponenten
-- responsives Verhalten
-- verschiedene Zustände der Anwendung
+- wie das Dashboard aufgebaut ist
+- welche visuellen Zustände benötigt werden
+- welche UI-Elemente wiederverwendet werden können
+- wie sich die Anwendung auf unterschiedlichen Bildschirmgrößen verhalten soll
+- wie Lade-, Leer- und Fehlerzustände dargestellt werden
+- welches visuelle Erscheinungsbild für TaskFlow verwendet wird
+
+In diesem Schritt wurde noch kein produktiver React- oder Next.js-Code implementiert. Die Stitch-Ausgaben dienten ausschließlich als Design- und Implementierungsgrundlage.
+
+---
 
 ## Verwendetes Werkzeug
 
-Für die Erstellung des Designs wurde **Google Stitch** verwendet.
+- Google Stitch
+
+Google Stitch wurde verwendet, um aus einer textuellen Beschreibung mehrere zusammengehörige UI-Entwürfe zu erzeugen.
+
+---
 
 ## Verwendeter Prompt
 
-Der vollständige Prompt befindet sich in der folgenden Datei:
+Der vollständige Prompt ist im Repository gespeichert:
 
-[Google-Stitch-Prompt öffnen](../prompts/01-google-stitch.md)
+- [Prompt 01 – UI-Design mit Google Stitch](../prompts/01-google-stitch.md)
 
-## Generierte Ansichten
+Zusätzlich wurde die Verwendung des Prompts durch einen Screenshot dokumentiert:
 
-Google Stitch hat folgende Ansichten für die Webanwendung generiert:
+- [Prompt in Google Stitch](../screenshots/stitch/stitch-01-prompt.png)
 
-- TaskFlow-Hauptdashboard
-- Dialog zum Hinzufügen einer Aufgabe
-- Leerer Dashboard-Zustand
-- Ladezustand
-- Fehlerzustand des Statistikdienstes
-- TaskFlow-Logo
+![Google-Stitch-Prompt](../screenshots/stitch/stitch-01-prompt.png)
 
-## Generierte Dateien
+---
 
-Die ursprünglichen Ausgaben von Google Stitch befinden sich im folgenden Ordner:
+## Durchführung
 
-[Google-Stitch-Ausgaben öffnen](../../stitch/)
+Die Designphase wurde in mehreren Ansichten umgesetzt.
 
-Für jede generierte Ansicht wurden normalerweise folgende Dateien erstellt:
+Dabei wurden sowohl der normale Anwendungszustand als auch wichtige Sonderzustände berücksichtigt.
+
+Google Stitch erzeugte folgende Bereiche:
+
+1. TaskFlow-Hauptdashboard
+2. Dialog zum Erstellen einer Aufgabe
+3. Dashboard ohne vorhandene Aufgaben
+4. Ladezustand
+5. Fehlerzustand des Statistikdienstes
+6. TaskFlow-Logo
+
+Für die meisten Ansichten wurden folgende Dateien exportiert:
 
 - `code.html`
 - `DESIGN.md`
 - `screen.png`
 
-Für das TaskFlow-Logo wurden folgende Dateien erstellt:
+Für das Logo wurden folgende Dateien erzeugt:
 
 - `DESIGN.md`
 - `logo.png`
 
-## Aufbau der Prototypen
+---
 
-Jede Datei mit dem Namen `code.html` stellt einen eigenständigen Webprototyp dar.
+## Generierte Ansichten und Dateien
 
-Die Datei enthält:
+### TaskFlow Dashboard
 
-- die HTML-Struktur
-- eingebettete CSS-Styles
-- eine eingebettete Tailwind-Konfiguration
-- den vollständigen visuellen Inhalt der jeweiligen Ansicht
+Das Hauptdashboard definiert die gemeinsame visuelle Struktur der Anwendung.
 
-Die generierten HTML-Prototypen können direkt in einem Browser geöffnet und überprüft werden.
+Es enthält unter anderem:
 
-## Design-Dokumentation
+- Header
+- Sidebar
+- Suchfeld
+- Dashboard-Titel
+- Statistik-Karten
+- Fortschrittsanzeige
+- Statusfilter
+- Aufgabenliste
+- Add-Task-Aktion
 
-Für jede generierte Ansicht wurde zusätzlich eine Datei mit dem Namen `DESIGN.md` erstellt.
+Zugehörige Dateien:
 
-Diese Dateien dokumentieren unter anderem:
+- [HTML-Prototyp](../../stitch/TaskFlow%20Dashboard/code.html)
+- [Designbeschreibung](../../stitch/TaskFlow%20Dashboard/DESIGN.md)
+- [Generierter Screen](../../stitch/TaskFlow%20Dashboard/screen.png)
+
+Dokumentierter Screenshot:
+
+- [TaskFlow-Hauptdashboard](../screenshots/stitch/stitch-02-main-dashboard.png)
+
+![TaskFlow-Hauptdashboard](../screenshots/stitch/stitch-02-main-dashboard.png)
+
+---
+
+### Add Task Modal
+
+Diese Ansicht zeigt den Dialog zum Erstellen einer neuen Aufgabe über dem bestehenden Dashboard.
+
+Der Entwurf enthält:
+
+- Modal-Overlay
+- Titel-Eingabefeld
+- Prioritätsauswahl
+- Fälligkeitsdatum
+- Abbrechen-Aktion
+- Speichern-Aktion
+- Schließen-Button
+
+Zugehörige Dateien:
+
+- [HTML-Prototyp](../../stitch/Add%20Task%20Modal/code.html)
+- [Designbeschreibung](../../stitch/Add%20Task%20Modal/DESIGN.md)
+- [Generierter Screen](../../stitch/Add%20Task%20Modal/screen.png)
+
+Dokumentierter Screenshot:
+
+- [Add-Task-Dialog](../screenshots/stitch/stitch-03-add-task-modal.png)
+
+![Dialog zum Hinzufügen einer Aufgabe](../screenshots/stitch/stitch-03-add-task-modal.png)
+
+---
+
+### Empty State Dashboard
+
+Diese Ansicht beschreibt den Zustand, in dem noch keine Aufgaben vorhanden sind.
+
+Der Entwurf enthält:
+
+- Empty-State-Illustration
+- erklärenden Text
+- primäre Create-Task-Aktion
+- weiterhin sichtbare Dashboard-Struktur
+- Statistikwerte ohne vorhandene Aufgaben
+
+Zugehörige Dateien:
+
+- [HTML-Prototyp](../../stitch/Empty%20State%20Dashboard/code.html)
+- [Designbeschreibung](../../stitch/Empty%20State%20Dashboard/DESIGN.md)
+- [Generierter Screen](../../stitch/Empty%20State%20Dashboard/screen.png)
+
+Dokumentierter Screenshot:
+
+- [Empty State](../screenshots/stitch/stitch-04-empty-state.png)
+
+![Leerer Dashboard-Zustand](../screenshots/stitch/stitch-04-empty-state.png)
+
+---
+
+### Loading State Dashboard
+
+Diese Ansicht zeigt den Zustand während des Ladens von Aufgaben und Statistiken.
+
+Der Entwurf verwendet:
+
+- Skeleton-Karten
+- Skeleton-Zeilen
+- Ladehinweise
+- Shimmer-Animationen
+- weiterhin erkennbare Dashboard-Struktur
+
+Zugehörige Dateien:
+
+- [HTML-Prototyp](../../stitch/Loading%20State%20Dashboard/code.html)
+- [Designbeschreibung](../../stitch/Loading%20State%20Dashboard/DESIGN.md)
+- [Generierter Screen](../../stitch/Loading%20State%20Dashboard/screen.png)
+
+Dokumentierter Screenshot:
+
+- [Loading State](../screenshots/stitch/stitch-05-loading-state.png)
+
+![Ladezustand](../screenshots/stitch/stitch-05-loading-state.png)
+
+---
+
+### Statistics Error State
+
+Diese Ansicht beschreibt den Fehlerfall, in dem die Statistikdaten nicht verfügbar sind.
+
+Wichtig war dabei, dass die Aufgabenverwaltung weiterhin sichtbar und nutzbar bleibt.
+
+Der Entwurf enthält:
+
+- Fehlerhinweis
+- Retry-Aktion
+- deaktiviert wirkende Statistikbereiche
+- weiterhin nutzbare Aufgabenliste
+- klare Trennung zwischen Statistikfehler und Aufgabenverwaltung
+
+Zugehörige Dateien:
+
+- [HTML-Prototyp](../../stitch/Statistics%20Error%20State/code.html)
+- [Designbeschreibung](../../stitch/Statistics%20Error%20State/DESIGN.md)
+- [Generierter Screen](../../stitch/Statistics%20Error%20State/screen.png)
+
+Dokumentierter Screenshot:
+
+- [Statistics Error State](../screenshots/stitch/stitch-06-error-state.png)
+
+![Fehlerzustand des Statistikdienstes](../screenshots/stitch/stitch-06-error-state.png)
+
+---
+
+### TaskFlow Logo
+
+Zusätzlich wurde ein eigenes Logo für die Anwendung erstellt.
+
+Das Logo dient als visuelle Grundlage für:
+
+- Branding
+- Sidebar
+- Header
+- lokale Frontend-Assets
+
+Zugehörige Dateien:
+
+- [Designbeschreibung](../../stitch/TaskFlow%20Logo/DESIGN.md)
+- [Logo-Asset](../../stitch/TaskFlow%20Logo/logo.png)
+
+Dokumentierter Screenshot:
+
+- [TaskFlow-Logo](../screenshots/stitch/stitch-07-logo.png)
+
+![TaskFlow-Logo](../screenshots/stitch/stitch-07-logo.png)
+
+---
+
+## Aufbau der Google-Stitch-Ausgaben
+
+### HTML-Prototypen
+
+Die Dateien `code.html` enthalten vollständige statische Webprototypen.
+
+Je nach Ansicht enthalten sie:
+
+- HTML-Struktur
+- eingebettete Styles
+- Tailwind-Utility-Klassen
+- Tailwind-Konfiguration
+- externe Font- und Icon-Referenzen
+- kleine JavaScript-Demofunktionen
+- vollständige Seitenstrukturen
+
+Die Prototypen können direkt im Browser geöffnet und visuell geprüft werden.
+
+Sie wurden jedoch nicht unverändert in das endgültige Frontend übernommen.
+
+### Designbeschreibungen
+
+Die Dateien `DESIGN.md` dokumentieren zentrale visuelle Entscheidungen.
+
+Dazu gehören unter anderem:
 
 - Farben
 - Typografie
 - Abstände
+- Größen
 - Komponentenstile
-- Layout-Struktur
 - visuelle Hierarchie
-- responsives Verhalten
+- Responsive-Verhalten
+- Interaktionen
+- Zustände
 
-## Designentscheidung
+Diese Informationen wurden später gemeinsam mit den HTML-Dateien und Screenshots analysiert.
 
-Die generierten Dateien werden als visuelle und technische Referenz für die spätere Frontend-Implementierung verwendet.
+---
 
-Die Dateien werden nicht unverändert in die produktive Anwendung übernommen.
+## Designentscheidung für die spätere Umsetzung
 
-Das endgültige Frontend wird separat mit folgenden Technologien implementiert:
+Die Google-Stitch-Ausgaben wurden als visuelle und technische Referenz verwendet.
+
+Für das endgültige Frontend wurde entschieden:
+
+- keine direkte Übernahme der vollständigen HTML-Seiten
+- keine Verwendung des erzeugten Tailwind-CDN-Codes
+- keine Übernahme eingebetteter Demo-Scripts
+- keine Duplizierung vollständiger Dashboard-Strukturen
+- Aufteilung in kleine React-Komponenten
+- Verwendung von JSX
+- Verwendung von Plain CSS und CSS Modules
+- zentrale Definition von Design-Tokens
+- lokale Verwendung des TaskFlow-Logos
+
+Die geplanten Frontend-Technologien waren:
 
 - Next.js
 - React
 - JavaScript
 - JSX
+- App Router
 - Plain CSS
+- CSS Modules
 
-Die HTML-Struktur, Farben, Abstände und Komponentenstile aus den Stitch-Prototypen werden in kleine und wiederverwendbare React-Komponenten übertragen.
+Die genaue Komponentenstruktur wurde erst nach einer separaten Analyse der Stitch-Dateien festgelegt.
 
-Nicht benötigte Styles, generierter Beispielcode und doppelte CSS-Regeln werden nicht in die endgültige Anwendung übernommen.
+---
 
-## Geplante React-Komponenten
+## Nachweis
 
-Das generierte Design wird später in folgende React-Komponenten aufgeteilt:
+Alle ausgewählten Screenshots dieser Designphase befinden sich unter:
 
-- `TaskForm.jsx`
-- `TaskList.jsx`
-- `TaskCard.jsx`
-- `StatisticsPanel.jsx`
+- [Stitch-Screenshots](../screenshots/stitch/)
 
-Das Hauptdashboard wird in folgender Datei zusammengesetzt:
+Alle unveränderten Google-Stitch-Ausgaben befinden sich unter:
 
-- `page.jsx`
+- [Google-Stitch-Ausgaben](../../stitch/)
 
-Die gemeinsamen visuellen Styles werden in folgender Datei definiert:
-
-- `globals.css`
-
-Diese Dateien werden erst während der Frontend-Implementierung erstellt und sind deshalb an dieser Stelle noch nicht verlinkt.
-
-## Screenshots
-
-Die ausgewählten Screenshots befinden sich im folgenden Ordner:
-
-[Alle Stitch-Screenshots öffnen](../screenshots/stitch/)
-
-### Verwendeter Prompt
-
-[Prompt-Screenshot öffnen](../screenshots/stitch/stitch-01-prompt.png)
-
-![Google-Stitch-Prompt](../screenshots/stitch/stitch-01-prompt.png)
-
-### Hauptdashboard
-
-[Dashboard-Screenshot öffnen](../screenshots/stitch/stitch-02-main-dashboard.png)
-
-![TaskFlow-Hauptdashboard](../screenshots/stitch/stitch-02-main-dashboard.png)
-
-### Dialog zum Hinzufügen einer Aufgabe
-
-[Add-Task-Dialog öffnen](../screenshots/stitch/stitch-03-add-task-modal.png)
-
-![Dialog zum Hinzufügen einer Aufgabe](../screenshots/stitch/stitch-03-add-task-modal.png)
-
-### Leerer Zustand
-
-[Empty-State-Screenshot öffnen](../screenshots/stitch/stitch-04-empty-state.png)
-
-![Leerer Dashboard-Zustand](../screenshots/stitch/stitch-04-empty-state.png)
-
-### Ladezustand
-
-[Loading-State-Screenshot öffnen](../screenshots/stitch/stitch-05-loading-state.png)
-
-![Ladezustand](../screenshots/stitch/stitch-05-loading-state.png)
-
-### Fehlerzustand des Statistikdienstes
-
-[Fehlerzustand öffnen](../screenshots/stitch/stitch-06-error-state.png)
-
-![Fehlerzustand des Statistikdienstes](../screenshots/stitch/stitch-06-error-state.png)
-
-### TaskFlow-Logo
-
-[TaskFlow-Logo öffnen](../screenshots/stitch/stitch-07-logo.png)
-
-![TaskFlow-Logo](../screenshots/stitch/stitch-07-logo.png)
+---
 
 ## Ergebnis
 
-Das UI-Design wurde vor Beginn der eigentlichen Anwendungsimplementierung erstellt.
+Das vollständige UI-Konzept wurde vor Beginn der technischen Implementierung erstellt.
 
-Die generierten Prototypen dienen als einheitliche visuelle Referenz für das spätere Next.js-Frontend.
+Dieser Schritt lieferte:
 
-Zusätzlich dokumentieren der gespeicherte Prompt, die HTML-Prototypen, die Design-Dateien und die Screenshots den KI-unterstützten Designprozess nachvollziehbar.
+- ein gemeinsames visuelles Erscheinungsbild
+- ein Hauptdashboard
+- ein Add-Task-Modal
+- einen Empty State
+- einen Loading State
+- einen Statistics Error State
+- ein TaskFlow-Logo
+- HTML-Prototypen
+- Designbeschreibungen
+- Screenshots als Nachweis
+- einen gespeicherten Prompt
+
+Die Stitch-Ausgaben bildeten damit die Grundlage für die spätere Analyse und Umsetzung des Next.js-Frontends.

@@ -1,286 +1,873 @@
-# Schritt 06 - Swagger UI für beide APIs
+# Schritt 06 – Swagger UI und OpenAPI-Dokumentation
 
 ## Ziel
 
-Ziel dieses Schritts ist die Ergänzung von OpenAPI-Dokumentation und Swagger UI für beide bestehenden ASP.NET-Core-Minimal-API-Projekte.
+In diesem Schritt wurden beide bestehenden ASP.NET-Core-APIs um eine interaktive OpenAPI-Dokumentation mit Swagger UI erweitert.
 
-Die bestehenden API-Routen, die Aufgabenverwaltung, die SQLite-Persistenz, die Statistikberechnung und die verteilte Kommunikation zwischen Task API und Analytics API bleiben unverändert.
+Ziel war es, die vorhandenen Endpunkte direkt im Browser:
 
-Relevante Dokumente und Dateien:
+- übersichtlich darzustellen
+- nach Funktionsbereichen zu gruppieren
+- mit verständlichen Beschreibungen zu dokumentieren
+- mit Query-, Path- und Request-Body-Parametern auszuführen
+- anhand ihrer Statuscodes und Response-Modelle zu überprüfen
 
-- [Prompt 06](../prompts/06-swagger-ui.md)
-- [Schritt 05 - Analytics API und verteilte Kommunikation](05-analytics-distributed-communication.md)
-- [Schritt 04 - Task API](04-task-api.md)
-- [Schritt 03 - Backend-Solution-Struktur](03-backend-solution-structure.md)
-- [Systemarchitektur](../diagrams/system-architecture.md)
-- [Task API Program.cs](../../backend/TaskFlow.TaskApi/Program.cs)
-- [Analytics API Program.cs](../../backend/TaskFlow.AnalyticsApi/Program.cs)
-- [Task API HTTP-Beispiele](../../backend/TaskFlow.TaskApi/TaskFlow.TaskApi.http)
-- [Analytics API HTTP-Beispiele](../../backend/TaskFlow.AnalyticsApi/TaskFlow.AnalyticsApi.http)
+Die bestehende Anwendungslogik wurde dabei nicht verändert.
 
-## Ausgangssituation
+Unverändert blieben insbesondere:
 
-Vor diesem Schritt waren beide APIs funktional umgesetzt:
+- Aufgabenverwaltung
+- Eingabevalidierung
+- SQLite-Persistenz
+- Repository Pattern
+- Service Layer
+- Statistikstrategien
+- HTTP-Kommunikation zwischen den APIs
+- Dashboard-Endpunkt
+- Fehlerverhalten bei Ausfall der Analytics API
 
-- `TaskFlow.TaskApi` verwaltet Aufgaben, speichert sie in SQLite und stellt den Dashboard-Endpunkt bereit.
-- `TaskFlow.AnalyticsApi` berechnet Basic- und Weighted-Statistiken.
-- Die Task API ruft die Analytics API über HTTP und JSON auf.
+---
 
-Swagger UI und OpenAPI-Dokumentation waren noch nicht eingerichtet.
+## Verwendete Werkzeuge und Technologien
 
-## Verwendete Swagger- und OpenAPI-Pakete
+- Codex CLI
+- .NET CLI
+- ASP.NET Core
+- Swashbuckle
+- Swagger UI
+- OpenAPI
+- NuGet
+- PowerShell
+- HTTP-Requests
 
-In beiden API-Projekten wurde das Paket installiert:
+---
 
-- `Swashbuckle.AspNetCore` Version `10.2.3`
+## Verwendeter Prompt
 
-Das Paket verwendet transitiv:
+Der vollständige Prompt dieses Schritts ist im Repository gespeichert:
 
-- `Microsoft.OpenApi` Version `2.7.5`
+- [Prompt 06 – Swagger UI für beide APIs](../prompts/06-swagger-ui.md)
 
-Für die OpenAPI-Konfiguration wird deshalb der aktuelle Namespace `Microsoft.OpenApi` verwendet.
+Der Prompt definierte unter anderem:
 
-Es wurden keine konkurrierenden OpenAPI-Generatoren wie NSwag, Scalar oder ReDoc hinzugefügt.
+- Swagger UI für beide APIs
+- getrennte OpenAPI-Dokumente
+- individuelle API-Titel
+- Beschreibungen der Endpunkte
+- Gruppierung über Tags
+- Request- und Response-Schemas
+- Dokumentation der Statuscodes
+- Sicherheitsprüfung der NuGet-Pakete
+- vollständige Build- und Laufzeitprüfung
+
+---
+
+## Ausgangslage
+
+Vor diesem Schritt waren beide Backend-Dienste bereits funktional umgesetzt.
+
+### Task API
+
+Die Task API verfügte bereits über:
+
+- Aufgaben-CRUD
+- SQLite-Persistenz
+- Repository Pattern
+- Service Layer
+- Statusfilter
+- Titelsuche
+- Analytics Client
+- Dashboard-Endpunkt
+- kontrollierte `503`-Antwort bei Ausfall der Analytics API
+
+### Analytics API
+
+Die Analytics API verfügte bereits über:
+
+- Statistikmodelle
+- Basic-Strategie
+- Weighted-Strategie
+- Strategy Pattern
+- Statistikendpunkt
+- Strategieauswahl über Query-Parameter
+
+Die Endpunkte konnten bereits über HTTP aufgerufen werden.
+
+Eine interaktive Browserdokumentation war jedoch noch nicht vorhanden.
+
+---
+
+## Installation der Swagger-Pakete
+
+In beiden API-Projekten wurde folgendes Paket verwendet:
+
+```text
+Swashbuckle.AspNetCore 10.2.3
+```
+
+Das Paket stellt unter anderem bereit:
+
+- OpenAPI-Dokumentgenerierung
+- Swagger-Middleware
+- Swagger UI
+- automatische Schemaerzeugung
+- Dokumentation von Request- und Response-Modellen
+
+Transitiv wurde folgende OpenAPI-Version verwendet:
+
+```text
+Microsoft.OpenApi 2.7.5
+```
+
+Für die OpenAPI-Metadaten wurde deshalb der aktuelle Namespace verwendet:
+
+```csharp
+Microsoft.OpenApi
+```
+
+Es wurden keine zusätzlichen oder konkurrierenden Dokumentationswerkzeuge installiert, beispielsweise:
+
+- NSwag
+- Scalar
+- ReDoc
+
+---
 
 ## Swagger-Konfiguration der Task API
 
-In `backend/TaskFlow.TaskApi/Program.cs` wurden registriert:
+Die Swagger-Konfiguration wurde in folgender Datei ergänzt:
 
-- `AddEndpointsApiExplorer`
-- `AddSwaggerGen`
+- [`Program.cs`](../../backend/TaskFlow.TaskApi/Program.cs)
 
-Das OpenAPI-Dokument:
+Registriert wurden:
 
-- Dokumentname: `v1`
-- Titel: `TaskFlow Task API`
-- Version: `v1`
-- Beschreibung: `Manages tasks and provides distributed dashboard statistics through the Analytics API.`
+```csharp
+AddEndpointsApiExplorer()
+AddSwaggerGen()
+```
 
-Swagger wird nur in der `Development`-Umgebung aktiviert.
+Das OpenAPI-Dokument verwendet:
 
-Verfügbare URLs:
+| Eigenschaft | Wert |
+| --- | --- |
+| Dokumentname | `v1` |
+| Titel | `TaskFlow Task API` |
+| Version | `v1` |
+| Beschreibung | `Manages tasks and provides distributed dashboard statistics through the Analytics API.` |
 
-- OpenAPI JSON: `http://localhost:5001/swagger/v1/swagger.json`
-- Swagger UI: `http://localhost:5001/swagger`
+Swagger wird nur in der Development-Umgebung aktiviert.
 
-Der Swagger-UI-Titel lautet:
+Dafür werden folgende Middleware-Komponenten verwendet:
+
+```csharp
+UseSwagger()
+UseSwaggerUI()
+```
+
+---
+
+## Adressen der Task API
+
+### Swagger UI
+
+```text
+http://localhost:5001/swagger
+```
+
+### OpenAPI-JSON
+
+```text
+http://localhost:5001/swagger/v1/swagger.json
+```
+
+Der Seitentitel der Swagger UI lautet:
 
 ```text
 TaskFlow Task API
 ```
 
+---
+
 ## Swagger-Konfiguration der Analytics API
 
-In `backend/TaskFlow.AnalyticsApi/Program.cs` wurden registriert:
+Die Swagger-Konfiguration wurde in folgender Datei ergänzt:
 
-- `AddEndpointsApiExplorer`
-- `AddSwaggerGen`
+- [`Program.cs`](../../backend/TaskFlow.AnalyticsApi/Program.cs)
 
-Das OpenAPI-Dokument:
+Auch hier wurden registriert:
 
-- Dokumentname: `v1`
-- Titel: `TaskFlow Analytics API`
-- Version: `v1`
-- Beschreibung: `Calculates basic and weighted statistics for task data received through HTTP and JSON.`
+```csharp
+AddEndpointsApiExplorer()
+AddSwaggerGen()
+```
 
-Swagger wird nur in der `Development`-Umgebung aktiviert.
+Das OpenAPI-Dokument verwendet:
 
-Verfügbare URLs:
+| Eigenschaft | Wert |
+| --- | --- |
+| Dokumentname | `v1` |
+| Titel | `TaskFlow Analytics API` |
+| Version | `v1` |
+| Beschreibung | `Calculates basic and weighted statistics for task data received through HTTP and JSON.` |
 
-- OpenAPI JSON: `http://localhost:5002/swagger/v1/swagger.json`
-- Swagger UI: `http://localhost:5002/swagger`
+Swagger wird auch in diesem Projekt ausschließlich in der Development-Umgebung aktiviert.
 
-Der Swagger-UI-Titel lautet:
+---
+
+## Adressen der Analytics API
+
+### Swagger UI
+
+```text
+http://localhost:5002/swagger
+```
+
+### OpenAPI-JSON
+
+```text
+http://localhost:5002/swagger/v1/swagger.json
+```
+
+Der Seitentitel der Swagger UI lautet:
 
 ```text
 TaskFlow Analytics API
 ```
 
+---
+
 ## OpenAPI-Metadaten
 
-Die vorhandenen Minimal-API-Endpunkte wurden mit kompakten OpenAPI-Metadaten dokumentiert.
+Die Minimal-API-Endpunkte wurden um kompakte OpenAPI-Metadaten ergänzt.
 
 Verwendet wurden unter anderem:
 
-- `WithName`
-- `WithTags`
-- `WithSummary`
-- `WithDescription`
-- `Accepts`
-- `Produces`
+```text
+WithName
+WithTags
+WithSummary
+WithDescription
+Accepts
+Produces
+```
 
-Die Endpunkte sind in Swagger UI nach Tags gruppiert:
+Dadurch zeigt Swagger UI:
 
-- `System`
-- `Tasks`
-- `Dashboard`
-- `Statistics`
+- sprechende Namen der Operationen
+- kurze Zusammenfassungen
+- ausführlichere Beschreibungen
+- Request-Body-Typen
+- Query-Parameter
+- Path-Parameter
+- Response-Statuscodes
+- Response-Schemas
+- Enumwerte
+- Validierungsmodelle
 
-Request-Body-Schemas, Query-Parameter, Pfadparameter, Response-Statuscodes und Response-Schemas werden in der OpenAPI-Dokumentation angezeigt.
+---
 
-## Dokumentierte Task-Endpunkte
+## Gruppierung der Endpunkte
 
-Die Task API dokumentiert:
+Die Endpunkte wurden über Tags logisch gruppiert.
 
-| Methode | Route | Zweck |
+Verwendete Tags:
+
+| Tag | Inhalt |
+| --- | --- |
+| `System` | Root- und Statusendpunkte |
+| `Tasks` | Aufgabenverwaltung |
+| `Dashboard` | verteilte Dashboard-Statistiken |
+| `Statistics` | interne Statistikberechnung |
+
+Dadurch können die Endpunkte in Swagger UI schneller gefunden und nachvollzogen werden.
+
+---
+
+# Dokumentation der Task API
+
+Die Task API dokumentiert folgende Endpunkte:
+
+| Methode | Route | Beschreibung |
 | --- | --- | --- |
-| GET | `/` | Verfügbarkeit der Task API prüfen |
-| GET | `/api/tasks` | Aufgaben abrufen, optional mit `status` und `search` |
-| POST | `/api/tasks` | Aufgabe erstellen |
-| PUT | `/api/tasks/{id}` | Aufgabe aktualisieren |
-| PATCH | `/api/tasks/{id}/toggle` | Abschlussstatus umschalten |
-| DELETE | `/api/tasks/{id}` | Aufgabe löschen |
-| GET | `/api/dashboard` | Verteilte Dashboard-Statistiken abrufen |
+| `GET` | `/` | Verfügbarkeit der Task API prüfen |
+| `GET` | `/api/tasks` | Aufgaben laden, filtern und durchsuchen |
+| `POST` | `/api/tasks` | Neue Aufgabe erstellen |
+| `PUT` | `/api/tasks/{id}` | Bestehende Aufgabe aktualisieren |
+| `PATCH` | `/api/tasks/{id}/toggle` | Abschlussstatus umschalten |
+| `DELETE` | `/api/tasks/{id}` | Aufgabe löschen |
+| `GET` | `/api/dashboard` | Verteilte Dashboard-Statistiken abrufen |
 
-Für `/api/tasks` werden die Query-Parameter `status` und `search` dokumentiert.
+---
 
-Für `/api/dashboard` wird der optionale Query-Parameter `strategy` dokumentiert. Unterstützt werden:
+## Dokumentierte Query-Parameter der Task API
 
-- `basic`
-- `weighted`
+### Aufgaben laden
 
-## Dokumentierte Analytics-Endpunkte
+Endpunkt:
 
-Die Analytics API dokumentiert:
+```text
+GET /api/tasks
+```
 
-| Methode | Route | Zweck |
+Dokumentierte Query-Parameter:
+
+| Parameter | Typ | Beschreibung |
 | --- | --- | --- |
-| GET | `/` | Verfügbarkeit der Analytics API prüfen |
-| POST | `/api/statistics` | Aufgabenstatistiken berechnen |
+| `status` | String | Filtert nach Aufgabenstatus |
+| `search` | String | Durchsucht den Aufgabentitel |
 
-Für `/api/statistics` wird der optionale Query-Parameter `strategy` dokumentiert. Unterstützt werden:
+Unterstützte Statuswerte:
 
-- `basic`
-- `weighted`
+```text
+all
+open
+completed
+```
 
-Ohne Query-Parameter wird `basic` verwendet.
+Beispiele:
 
-Die Swagger-Schemas zeigen:
+```text
+GET /api/tasks?status=open
+GET /api/tasks?search=Swagger
+GET /api/tasks?status=open&search=Documentation
+```
 
-- Task-Summaries
-- Statistik-Request
-- Statistik-Result
-- Prioritäts-Enumwerte
+---
 
-## Swagger UI und Try it out
+### Dashboard laden
 
-Swagger UI ist für beide APIs verfügbar und zeigt:
+Endpunkt:
 
-- API-Titel
-- gruppierte Endpunkte
-- lesbare Zusammenfassungen
-- editierbare Request-Bodies
-- eintragbare Query-Parameter
-- Statuscodes
-- Response-Bodies
-- Modelle und Schemas
+```text
+GET /api/dashboard
+```
 
-Die Browser-Automation der Codex-Sitzung war nicht verfügbar. Deshalb wurde die UI-Erreichbarkeit über die Swagger-HTML-Seiten und die OpenAPI-JSON-Dokumente geprüft. Die Endpunkte, die über `Try it out` ausgeführt würden, wurden gegen die laufenden APIs per HTTP verifiziert.
+Dokumentierter Query-Parameter:
 
-## Überprüfung der verteilten Kommunikation
+| Parameter | Typ | Beschreibung |
+| --- | --- | --- |
+| `strategy` | String | Wählt die Statistikstrategie |
 
-Die verteilte Kommunikation wurde über den Task-API-Endpunkt geprüft:
+Unterstützte Werte:
+
+```text
+basic
+weighted
+```
+
+Ohne Query-Parameter wird verwendet:
+
+```text
+basic
+```
+
+Beispiele:
 
 ```text
 GET /api/dashboard?strategy=basic
 GET /api/dashboard?strategy=weighted
 ```
 
-Dabei lädt die Task API Aufgaben aus SQLite und ruft die separat laufende Analytics API über HTTP und JSON auf.
+---
 
-Beide Varianten lieferten erfolgreich HTTP 200.
+## Dokumentierte Request-Bodies der Task API
 
-## Verhalten bei nicht verfügbarer Analytics API
+Swagger UI erzeugt editierbare Request-Bodies für das Erstellen und Bearbeiten einer Aufgabe.
 
-Nach dem Stoppen der Analytics API wurde geprüft:
+Beispiel:
 
-```text
-GET /api/dashboard
+```json
+{
+  "title": "Document Swagger UI",
+  "priority": "High",
+  "dueDate": "2026-07-15"
+}
 ```
 
-Die Task API lieferte erwartungsgemäß:
+Dokumentierte Prioritätswerte:
 
 ```text
-HTTP 503
+Low
+Medium
+High
 ```
 
-Die Antwortnachricht blieb unverändert:
+Die OpenAPI-Dokumentation zeigt außerdem:
 
-```text
-Statistics are temporarily unavailable. Your tasks can still be managed.
-```
+- erforderliche Felder
+- Datentypen
+- Datumsformat
+- Enumwerte
+- Response-Modell von `TaskItem`
 
-Zusätzlich wurde geprüft, dass `GET /api/tasks` weiterhin HTTP 200 liefert.
+---
 
-Nach dem Neustart der Analytics API lieferte der Dashboard-Endpunkt wieder HTTP 200.
+## Dokumentierte Statuscodes der Task API
 
-## Sicherheitsprüfung der NuGet-Pakete
-
-Die Paketprüfung wurde für direkte und transitive Abhängigkeiten ausgeführt:
-
-```text
-dotnet package list --project backend\TaskFlow.TaskApi\TaskFlow.TaskApi.csproj --include-transitive --vulnerable
-dotnet package list --project backend\TaskFlow.AnalyticsApi\TaskFlow.AnalyticsApi.csproj --include-transitive --vulnerable
-```
-
-Ergebnis:
-
-- Für `TaskFlow.TaskApi` wurden keine anfälligen Pakete gefunden.
-- Für `TaskFlow.AnalyticsApi` wurden keine anfälligen Pakete gefunden.
-
-Es wurden keine Paketwarnungen unterdrückt.
-
-## Konfigurierte URLs
-
-| API | Swagger UI | OpenAPI JSON |
+| Endpunkt | Erfolgsstatus | Mögliche Fehler |
 | --- | --- | --- |
-| Task API | `http://localhost:5001/swagger` | `http://localhost:5001/swagger/v1/swagger.json` |
-| Analytics API | `http://localhost:5002/swagger` | `http://localhost:5002/swagger/v1/swagger.json` |
+| `GET /api/tasks` | `200` | `400` |
+| `POST /api/tasks` | `201` | `400` |
+| `PUT /api/tasks/{id}` | `200` | `400`, `404` |
+| `PATCH /api/tasks/{id}/toggle` | `200` | `404` |
+| `DELETE /api/tasks/{id}` | `204` | `404` |
+| `GET /api/dashboard` | `200` | `400`, `503` |
 
-## Manuelle Überprüfung
+Damit wird in Swagger UI sichtbar, welche Antworten ein Client erwarten kann.
 
-Die manuelle Überprüfung wurde mit zwei getrennt laufenden API-Prozessen durchgeführt.
+---
 
-Geprüft wurde für die Task API:
+# Dokumentation der Analytics API
+
+Die Analytics API dokumentiert folgende Endpunkte:
+
+| Methode | Route | Beschreibung |
+| --- | --- | --- |
+| `GET` | `/` | Verfügbarkeit der Analytics API prüfen |
+| `POST` | `/api/statistics` | Aufgabenstatistiken berechnen |
+
+---
+
+## Dokumentierter Statistikendpunkt
+
+Endpunkt:
+
+```text
+POST /api/statistics
+```
+
+Dokumentierter Query-Parameter:
+
+| Parameter | Typ | Beschreibung |
+| --- | --- | --- |
+| `strategy` | String | Auswahl der Berechnungsstrategie |
+
+Unterstützte Werte:
+
+```text
+basic
+weighted
+```
+
+Ohne Angabe wird verwendet:
+
+```text
+basic
+```
+
+---
+
+## Dokumentierter Statistik-Request
+
+Swagger UI zeigt das Request-Schema der Analytics API.
+
+Beispiel:
+
+```json
+{
+  "tasks": [
+    {
+      "priority": "High",
+      "dueDate": "2026-07-10",
+      "isCompleted": false
+    },
+    {
+      "priority": "Medium",
+      "dueDate": "2026-07-15",
+      "isCompleted": true
+    }
+  ]
+}
+```
+
+Dokumentiert werden:
+
+- Task-Summary
+- Priorität
+- Fälligkeitsdatum
+- Abschlussstatus
+- Liste der übertragenen Aufgaben
+
+---
+
+## Dokumentierte Statistikantwort
+
+Die Antwort enthält:
+
+```json
+{
+  "totalTasks": 2,
+  "openTasks": 1,
+  "completedTasks": 1,
+  "overdueTasks": 1,
+  "completionPercentage": 50,
+  "weightedOpenScore": 3,
+  "strategy": "weighted"
+}
+```
+
+Swagger UI zeigt dazu das vollständige Response-Schema.
+
+---
+
+## Dokumentierte Statuscodes der Analytics API
+
+| Endpunkt | Erfolgsstatus | Mögliche Fehler |
+| --- | --- | --- |
+| `GET /` | `200` | – |
+| `POST /api/statistics` | `200` | `400` |
+
+Eine unbekannte Strategie liefert:
+
+```text
+HTTP 400 Bad Request
+```
+
+---
+
+# Interaktive Verwendung mit Swagger UI
+
+Swagger UI stellt für beide APIs die Funktion:
+
+```text
+Try it out
+```
+
+bereit.
+
+Damit können:
+
+- Query-Parameter eingetragen
+- Path-Parameter gesetzt
+- Request-Bodies bearbeitet
+- HTTP-Requests ausgeführt
+- Response-Statuscodes geprüft
+- Response-Header angezeigt
+- Response-Bodies untersucht werden
+
+Die Swagger-Oberflächen dienen damit sowohl als Dokumentation als auch als Werkzeug zur manuellen Prüfung.
+
+---
+
+## Screenshot – Task API Swagger UI
+
+- [Task API Swagger UI öffnen](../screenshots/swagger/swagger-01-task-api.png)
+
+![Task API Swagger UI](../screenshots/swagger/swagger-01-task-api.png)
+
+Der Screenshot dokumentiert:
+
+- den Titel der Task API
+- die Tags `System`, `Tasks` und `Dashboard`
+- die Aufgabenendpunkte
+- den Dashboard-Endpunkt
+- die von Swagger erkannten HTTP-Methoden
+
+---
+
+## Screenshot – Analytics API Swagger UI
+
+- [Analytics API Swagger UI öffnen](../screenshots/swagger/swagger-02-analytics-api.png)
+
+![Analytics API Swagger UI](../screenshots/swagger/swagger-02-analytics-api.png)
+
+Der Screenshot dokumentiert:
+
+- den Titel der Analytics API
+- den Tag `Statistics`
+- den Root-Endpunkt
+- den Statistikendpunkt
+- die auswählbare Statistikstrategie
+
+---
+
+## Screenshot – Weighted Dashboard Request
+
+- [Weighted Dashboard Request öffnen](../screenshots/swagger/swagger-03-dashboard-weighted.png)
+
+![Weighted Dashboard Request](../screenshots/swagger/swagger-03-dashboard-weighted.png)
+
+Der Screenshot dokumentiert einen Aufruf des verteilten Dashboard-Endpunkts mit:
+
+```text
+strategy=weighted
+```
+
+Dabei wird die vollständige Kommunikationskette verwendet:
+
+```text
+Swagger UI
+→ Task API
+→ Analytics API
+→ Task API
+→ Swagger UI
+```
+
+---
+
+# Manuelle Prüfung
+
+Für die Überprüfung wurden Task API und Analytics API gleichzeitig als getrennte Prozesse gestartet.
+
+---
+
+## Analytics API starten
+
+```powershell
+dotnet run `
+  --project backend\TaskFlow.AnalyticsApi\TaskFlow.AnalyticsApi.csproj `
+  --urls "http://localhost:5002"
+```
+
+---
+
+## Task API starten
+
+```powershell
+dotnet run `
+  --project backend\TaskFlow.TaskApi\TaskFlow.TaskApi.csproj `
+  --urls "http://localhost:5001"
+```
+
+---
+
+## Geprüfte Swagger-Adressen
+
+```text
+http://localhost:5001/swagger
+http://localhost:5001/swagger/v1/swagger.json
+http://localhost:5002/swagger
+http://localhost:5002/swagger/v1/swagger.json
+```
+
+Alle vier Adressen waren erreichbar.
+
+---
+
+## Geprüfte Task-API-Funktionen
+
+Über Swagger UI beziehungsweise direkte HTTP-Aufrufe wurden geprüft:
 
 - `GET /`
-- `POST /api/tasks`
 - `GET /api/tasks`
-- `GET /api/tasks?status=open&search=Swagger`
+- `GET /api/tasks?status=open`
+- `GET /api/tasks?search=Swagger`
+- `POST /api/tasks`
 - `PUT /api/tasks/{id}`
 - `PATCH /api/tasks/{id}/toggle`
+- `DELETE /api/tasks/{id}`
 - `GET /api/dashboard?strategy=basic`
 - `GET /api/dashboard?strategy=weighted`
-- `DELETE /api/tasks/{id}`
 
-Geprüft wurde für die Analytics API:
+Die Request- und Response-Modelle wurden korrekt in Swagger dargestellt.
+
+---
+
+## Geprüfte Analytics-API-Funktionen
+
+Geprüft wurden:
 
 - `GET /`
 - `POST /api/statistics`
 - `POST /api/statistics?strategy=basic`
 - `POST /api/statistics?strategy=weighted`
-- unbekannte Strategie mit HTTP 400
+- unbekannte Statistikstrategie
+- leerer Aufgaben-Request
+- Request mit unterschiedlichen Prioritäten
 
-Zusätzlich wurde geprüft:
-
-- Task API Swagger UI ist erreichbar.
-- Analytics API Swagger UI ist erreichbar.
-- beide OpenAPI-JSON-Dokumente sind erreichbar.
-- Dashboard liefert HTTP 503, wenn die Analytics API gestoppt ist.
-- Aufgabenverwaltung bleibt nutzbar, wenn die Analytics API gestoppt ist.
-- Dashboard liefert nach Neustart der Analytics API wieder HTTP 200.
-
-Nach der Überprüfung wurden alle gestarteten API-Prozesse gestoppt.
-
-## Build-Ergebnis
-
-Die komplette Backend-Solution wurde gebaut:
+Die Analytics API lieferte für unterstützte Strategien:
 
 ```text
+HTTP 200 OK
+```
+
+Eine unbekannte Strategie lieferte:
+
+```text
+HTTP 400 Bad Request
+```
+
+---
+
+# Prüfung der verteilten Kommunikation
+
+Die verteilte Kommunikation wurde über die Task API ausgeführt.
+
+Geprüfte Endpunkte:
+
+```text
+GET /api/dashboard?strategy=basic
+GET /api/dashboard?strategy=weighted
+```
+
+Ablauf:
+
+1. Die Task API lädt die Aufgaben aus SQLite.
+2. Die Task API erstellt einen Analytics-Request.
+3. Die Task API sendet die Daten an Port `5002`.
+4. Die Analytics API berechnet die Statistik.
+5. Die Analytics API sendet die Antwort zurück.
+6. Die Task API gibt die Statistik an Swagger UI zurück.
+
+Beide Strategien lieferten erfolgreich:
+
+```text
+HTTP 200 OK
+```
+
+---
+
+# Prüfung des Ausfallverhaltens
+
+Zur Prüfung der verteilten Fehlerbehandlung wurde die Analytics API gestoppt.
+
+Anschließend wurde über die Task API aufgerufen:
+
+```text
+GET /api/dashboard
+```
+
+Ergebnis:
+
+```text
+HTTP 503 Service Unavailable
+```
+
+Antwort:
+
+```text
+Statistics are temporarily unavailable. Your tasks can still be managed.
+```
+
+Parallel wurde geprüft:
+
+```text
+GET /api/tasks
+```
+
+Dieser Endpunkt lieferte weiterhin:
+
+```text
+HTTP 200 OK
+```
+
+Damit wurde bestätigt:
+
+- Die Task API bleibt erreichbar.
+- SQLite bleibt erreichbar.
+- Die Aufgabenverwaltung bleibt nutzbar.
+- Nur die Statistikfunktion ist vorübergehend nicht verfügbar.
+
+Nach dem Neustart der Analytics API lieferte der Dashboard-Endpunkt wieder:
+
+```text
+HTTP 200 OK
+```
+
+---
+
+# Sicherheitsprüfung der NuGet-Pakete
+
+Zusätzlich wurde der Paketgraph beider APIs auf bekannte Sicherheitsprobleme geprüft.
+
+Verwendete Befehle:
+
+```powershell
+dotnet package list `
+  --project backend\TaskFlow.TaskApi\TaskFlow.TaskApi.csproj `
+  --include-transitive `
+  --vulnerable
+```
+
+```powershell
+dotnet package list `
+  --project backend\TaskFlow.AnalyticsApi\TaskFlow.AnalyticsApi.csproj `
+  --include-transitive `
+  --vulnerable
+```
+
+---
+
+## Gefundene SQLite-Abhängigkeit
+
+In einem früheren Build wurde eine Sicherheitswarnung für eine transitive Version von:
+
+```text
+SQLitePCLRaw.lib.e_sqlite3
+```
+
+gemeldet.
+
+Die betroffene transitive Version war:
+
+```text
+2.1.11
+```
+
+Zur Bereinigung wurde im Task-API-Projekt eine aktuelle direkte Version referenziert:
+
+```text
+SQLitePCLRaw.lib.e_sqlite3 3.53.3
+```
+
+Dadurch wurde die alte transitive Version im Paketgraphen ersetzt.
+
+Es wurden keine Sicherheitswarnungen unterdrückt.
+
+---
+
+## Ergebnis der Paketprüfung
+
+Nach der Aktualisierung wurden für beide Projekte keine bekannten anfälligen Pakete mehr gemeldet:
+
+```text
+TaskFlow.TaskApi:
+Keine anfälligen Pakete gefunden.
+
+TaskFlow.AnalyticsApi:
+Keine anfälligen Pakete gefunden.
+```
+
+---
+
+# Zugehörige Dateien
+
+## Task API
+
+- [`TaskFlow.TaskApi.csproj`](../../backend/TaskFlow.TaskApi/TaskFlow.TaskApi.csproj)
+- [`Program.cs`](../../backend/TaskFlow.TaskApi/Program.cs)
+
+## Analytics API
+
+- [`TaskFlow.AnalyticsApi.csproj`](../../backend/TaskFlow.AnalyticsApi/TaskFlow.AnalyticsApi.csproj)
+- [`Program.cs`](../../backend/TaskFlow.AnalyticsApi/Program.cs)
+
+## Dokumentation
+
+- [Prompt 06 – Swagger UI](../prompts/06-swagger-ui.md)
+- [Task API Swagger Screenshot](../screenshots/swagger/swagger-01-task-api.png)
+- [Analytics API Swagger Screenshot](../screenshots/swagger/swagger-02-analytics-api.png)
+- [Weighted Dashboard Screenshot](../screenshots/swagger/swagger-03-dashboard-weighted.png)
+
+---
+
+# Build-Prüfung
+
+Nach Abschluss der Swagger- und Paketkonfiguration wurde die vollständige Backend-Solution gebaut.
+
+Ausgeführt im Verzeichnis:
+
+```text
+backend/
+```
+
+Befehl:
+
+```powershell
 dotnet build TaskFlow.sln
 ```
 
-Build-Ergebnis:
+Ergebnis:
 
 ```text
 Der Buildvorgang wurde erfolgreich ausgeführt.
@@ -288,27 +875,68 @@ Der Buildvorgang wurde erfolgreich ausgeführt.
 0 Fehler
 ```
 
-## Screenshots
+Damit wurde bestätigt:
 
-Die folgenden Screenshot-Pfade sind für die spätere visuelle Dokumentation vorgesehen:
+- beide Projekte kompilieren
+- die Swagger-Dienste sind korrekt registriert
+- die OpenAPI-Konfiguration ist gültig
+- die Paketabhängigkeiten sind auflösbar
+- die Sicherheitswarnung wurde behoben
+- keine Buildwarnungen vorhanden sind
 
-- [Task API Swagger UI](../screenshots/swagger/swagger-01-task-api.png)
-- [Analytics API Swagger UI](../screenshots/swagger/swagger-02-analytics-api.png)
-- [Dashboard Weighted Swagger Request](../screenshots/swagger/swagger-03-dashboard-weighted.png)
+---
 
-In diesem Schritt wurden keine Screenshot-Dateien künstlich erstellt.
+# Nicht Bestandteil dieses Schritts
 
-## Erstellte oder aktualisierte Dateien
+Folgende Funktionen waren nicht Bestandteil von Schritt 06:
 
-- `backend/TaskFlow.TaskApi/TaskFlow.TaskApi.csproj`
-- `backend/TaskFlow.TaskApi/Program.cs`
-- `backend/TaskFlow.AnalyticsApi/TaskFlow.AnalyticsApi.csproj`
-- `backend/TaskFlow.AnalyticsApi/Program.cs`
-- `docs/steps/06-swagger-ui.md`
-- `README.md`
+- Erstellung des Next.js-Projekts
+- Implementierung von React-Komponenten
+- Umsetzung des Stitch-Designs
+- Frontend-API-Integration
+- Browserkommunikation mit der Task API
+- Frontend-Loading-State
+- Frontend-Empty-State
+- Frontend-Statistics-Error-State
 
-## Ergebnis
+Dieser Schritt konzentrierte sich ausschließlich auf:
 
-Swagger UI und OpenAPI-Dokumentation sind für beide APIs eingerichtet. Beide APIs zeigen ihre eigenen Titel, dokumentieren ihre Endpunkte mit Tags und Metadaten und stellen interaktive Dokumentation unter den lokalen Swagger-URLs bereit.
+- Swagger UI
+- OpenAPI-Dokumentation
+- Endpoint-Metadaten
+- manuelle API-Prüfung
+- Sicherheitsprüfung der NuGet-Pakete
 
-Die Backend-Implementierung ist damit abgeschlossen. Der nächste Projektschritt ist die Frontend-Implementierung.
+---
+
+# Ergebnis
+
+Am Ende dieses Schritts verfügten beide APIs über eine vollständige interaktive Swagger-Dokumentation.
+
+Umgesetzt wurden:
+
+- Swagger UI für die Task API
+- Swagger UI für die Analytics API
+- getrennte OpenAPI-Dokumente
+- individuelle API-Titel und Beschreibungen
+- Tags für die logische Gruppierung
+- dokumentierte Query-Parameter
+- dokumentierte Path-Parameter
+- dokumentierte Request-Bodies
+- dokumentierte Response-Modelle
+- dokumentierte HTTP-Statuscodes
+- interaktive API-Ausführung
+- Prüfung der verteilten Dashboard-Kommunikation
+- Prüfung des Analytics-Ausfalls
+- Sicherheitsprüfung direkter und transitiver Pakete
+- Bereinigung der SQLite-Paketwarnung
+- erfolgreicher Build ohne Warnungen und Fehler
+
+Build-Ergebnis:
+
+```text
+0 Warnung(en)
+0 Fehler
+```
+
+Damit war das Backend vollständig dokumentiert, interaktiv prüfbar und bereit für die anschließende Frontend-Implementierung.

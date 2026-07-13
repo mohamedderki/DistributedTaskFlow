@@ -1,141 +1,366 @@
 # DistributedTaskFlow
 
-## Projektübersicht
+DistributedTaskFlow ist eine browserbasierte Aufgabenverwaltung mit einer kleinen verteilten Architektur.
 
-DistributedTaskFlow ist eine browserbasierte Aufgabenverwaltung für eine einzelne Person.
+Die Anwendung besteht aus drei getrennt gestarteten Prozessen:
 
-Das Projekt kombiniert ein geplantes Next.js-Frontend mit zwei separat ausführbaren ASP.NET-Core-APIs und einer lokalen SQLite-Datenbank.
+- einem responsiven Next.js-Frontend
+- einer ASP.NET-Core Task API
+- einer separaten ASP.NET-Core Analytics API
 
-Der Fokus liegt auf einer klar getrennten und nachvollziehbaren Architektur für eine kleine verteilte Webanwendung.
+Aufgaben werden dauerhaft in SQLite gespeichert. Die Statistikberechnung erfolgt über die separat laufende Analytics API.
 
-## Ziel des Projekts
+![Finales TaskFlow-Dashboard](docs/screenshots/final/final-02-loaded-dashboard.png)
 
-Ziel ist die Umsetzung einer einfachen TaskFlow-Anwendung, die Aufgaben verwaltet, Aufgabenstatistiken berechnet und die Kommunikation zwischen getrennten Prozessen über HTTP und JSON demonstriert.
+---
 
-Das Projekt dient außerdem zur praktischen Darstellung von Designprinzipien und Design Patterns innerhalb einer modularen Webanwendung.
+## Überblick
 
-## Hauptfunktionen
+### Hauptfunktionen
 
-- Aufgaben anzeigen
-- Aufgaben erstellen
-- Aufgaben bearbeiten
-- Aufgaben als erledigt oder offen markieren
-- Aufgaben löschen
-- Aufgaben nach Status filtern
-- Aufgaben durchsuchen
-- Aufgabenstatistiken anzeigen
-- Aufgaben dauerhaft in SQLite speichern
-- Statistikfehler anzeigen, ohne die Aufgabenverwaltung zu blockieren
+- Aufgaben erstellen, bearbeiten, löschen und abschließen
+- Aufgaben nach Titel durchsuchen
+- Aufgaben nach `All`, `Open` und `Completed` filtern
+- Prioritäten und Fälligkeitsdaten verwalten
+- Basic- und Weighted-Statistiken anzeigen
+- Loading-, Empty- und Error-Zustände darstellen
+- Aufgabenverwaltung trotz Ausfall der Analytics API weiterverwenden
+- Statistikdaten nach einem Dienstausfall über `Retry` erneut laden
 
-## Verwendete Technologien
+### Technologien
 
-- Next.js
-- React
-- JavaScript
-- JSX
-- Plain CSS
-- ASP.NET Core
-- C#
-- SQLite
-- HTTP
-- JSON
-- Swagger UI
-- OpenAPI
-- Mermaid für Architekturdokumentation
-
-## Systemmodule
-
-| Modul | Verantwortung |
+| Bereich | Technologien |
 | --- | --- |
-| Browser | Stellt die Benutzeroberfläche für den Benutzer dar. |
-| Next.js Frontend | Rendert die TaskFlow-Oberfläche und kommuniziert mit der Task API. |
-| Task API | Verwaltet Aufgaben, stellt Task-Endpunkte bereit und übernimmt die SQLite-Persistenz. |
-| Analytics API | Berechnet Aufgabenstatistiken auf Basis der von der Task API bereitgestellten Daten. |
-| SQLite | Speichert die Aufgabendaten lokal und dauerhaft. |
+| Frontend | Next.js, React, JavaScript, JSX, CSS Modules |
+| Task API | ASP.NET Core, C#, Microsoft.Data.Sqlite |
+| Analytics API | ASP.NET Core, C#, Strategy Pattern |
+| Datenbank | SQLite |
+| Kommunikation | HTTP und JSON |
+| Dokumentation | Markdown, Mermaid, Screenshots |
+| Werkzeuge | Google Stitch, Cursor Agent, Codex CLI, Claude Code, Swagger UI |
 
-## Kurze Architekturübersicht
+---
 
-Die Anwendung ist als verteiltes System aus mehreren unabhängigen Modulen aufgebaut:
+## Systemarchitektur
 
-```text
-Browser
-    |
-    v
-Next.js Frontend
-    |
-    v
-Task API
-    |
-    +----> SQLite
-    |
-    v
-Analytics API
+```mermaid
+flowchart LR
+    B[Browser] --> F[Next.js Frontend]
+    F -->|HTTP / JSON| T[Task API]
+    T --> D[(SQLite)]
+    T -->|HTTP / JSON| A[Analytics API]
 ```
 
-Die Task API kommuniziert mit SQLite, um Aufgaben dauerhaft zu speichern und zu lesen.
+Der Browser kommuniziert ausschließlich mit der Task API.
 
-Für die Statistikberechnung sendet die Task API die benötigten Aufgabendaten über HTTP und JSON an die separat laufende Analytics API.
+```text
+Frontend      → http://localhost:3000
+Task API      → http://localhost:5001
+Analytics API → http://localhost:5002
+```
 
-Das Frontend kommuniziert ausschließlich mit der Task API und greift weder direkt auf SQLite noch direkt auf die Analytics API zu.
+Die Task API verwaltet die Aufgaben und die SQLite-Datenbank. Für Dashboard-Statistiken sendet sie die benötigten Daten über HTTP an die Analytics API.
 
-## Designprinzipien und Design Patterns
+Eine ausführliche Beschreibung befindet sich in der [Systemarchitektur](docs/diagrams/system-architecture.md).
 
-Das Projekt demonstriert folgende Prinzipien und Patterns:
+---
 
-- Separation of Concerns
-- Single Responsibility Principle
-- Dependency Inversion Principle
-- Dependency Injection
-- Repository Pattern für den Zugriff auf Aufgabendaten
-- Service Layer für zentrale Aufgabenlogik und Validierung
-- Strategy Pattern für austauschbare Statistikberechnungen
-- Adapter beziehungsweise Gateway Pattern für die HTTP-Kommunikation
-- verteilte Kommunikation zwischen separaten Prozessen
+## Projekt herunterladen
 
-## Lokale Entwicklungsadressen
+### Möglichkeit 1 – Mit Git klonen
+
+```powershell
+git clone https://github.com/mohamedderki/DistributedTaskFlow.git
+cd DistributedTaskFlow
+```
+
+### Möglichkeit 2 – Als ZIP herunterladen
+
+1. Auf GitHub `Code` auswählen.
+2. `Download ZIP` auswählen.
+3. Das ZIP-Archiv entpacken.
+4. PowerShell im entpackten Projektordner öffnen.
+
+---
+
+## Voraussetzungen
+
+Für die lokale Ausführung werden benötigt:
+
+- .NET 10 SDK
+- Node.js mit npm
+- Git, falls das Repository geklont wird
+
+Installationen prüfen:
+
+```powershell
+dotnet --version
+node --version
+npm --version
+git --version
+```
+
+---
+
+# Anwendung lokal starten
+
+Für die vollständige Anwendung werden drei Terminalfenster benötigt.
+
+## 1. Frontend vorbereiten
+
+Im Projektstamm:
+
+```powershell
+Copy-Item frontend\.env.example frontend\.env.local
+```
+
+Die lokale Konfiguration enthält:
+
+```env
+NEXT_PUBLIC_TASK_API_URL=http://localhost:5001
+```
+
+Danach die Frontend-Abhängigkeiten installieren:
+
+```powershell
+cd frontend
+npm.cmd install
+cd ..
+```
+
+Die Datei `frontend/.env.local` ist nur für die lokale Ausführung vorgesehen und wird nicht in Git aufgenommen.
+
+---
+
+## 2. Analytics API starten
+
+Terminal 1, im Projektstamm:
+
+```powershell
+dotnet run `
+  --project backend\TaskFlow.AnalyticsApi\TaskFlow.AnalyticsApi.csproj `
+  --urls "http://localhost:5002"
+```
+
+Verfügbare Adressen:
+
+```text
+http://localhost:5002
+http://localhost:5002/swagger
+```
+
+---
+
+## 3. Task API starten
+
+Terminal 2, im Projektstamm:
+
+```powershell
+dotnet run `
+  --project backend\TaskFlow.TaskApi\TaskFlow.TaskApi.csproj `
+  --urls "http://localhost:5001"
+```
+
+Verfügbare Adressen:
+
+```text
+http://localhost:5001
+http://localhost:5001/swagger
+```
+
+Die SQLite-Datenbank wird unter folgendem Pfad verwendet:
+
+```text
+backend/TaskFlow.TaskApi/taskflow.db
+```
+
+Falls die Datenbank oder die Tabelle noch nicht vorhanden ist, wird sie von der Task API automatisch vorbereitet.
+
+---
+
+## 4. Frontend starten
+
+Terminal 3:
+
+```powershell
+cd frontend
+npm.cmd run dev
+```
+
+Anwendung im Browser öffnen:
+
+```text
+http://localhost:3000
+```
+
+---
+
+## Lokale Adressen
 
 | Anwendung | Adresse |
 | --- | --- |
-| Next.js Frontend | `http://localhost:3000` |
+| Frontend | `http://localhost:3000` |
 | Task API | `http://localhost:5001` |
-| Task API Swagger UI | `http://localhost:5001/swagger` |
+| Task API Swagger | `http://localhost:5001/swagger` |
 | Analytics API | `http://localhost:5002` |
-| Analytics API Swagger UI | `http://localhost:5002/swagger` |
+| Analytics API Swagger | `http://localhost:5002/swagger` |
 
-## Aktueller Projektstatus
+---
 
-- Schritt 01: Das UI-Design wurde mit Google Stitch erstellt und dokumentiert.
-- Schritt 02: Die Projektplanung und die Systemarchitektur wurden dokumentiert.
-- Schritt 03: Die Backend-Solution mit zwei getrennten API-Projekten wurde erstellt.
-- Schritt 04: Die vollständige Aufgabenverwaltung wurde in der Task API implementiert.
-- Schritt 05: Die Analytics API und die verteilte Kommunikation wurden implementiert.
-- Schritt 06: Swagger UI und OpenAPI-Dokumentation wurden für beide APIs eingerichtet.
-- Die Task API speichert Aufgaben dauerhaft in SQLite.
-- Das Repository Pattern wurde für den Datenbankzugriff umgesetzt.
-- Der TaskService enthält die zentrale Aufgabenlogik und Validierung.
-- Das Strategy Pattern unterstützt Basic- und Weighted-Statistiken.
-- Die Task API kommuniziert über einen dedizierten Analytics Client mit der Analytics API.
-- Der verteilte Dashboard-Endpunkt `/api/dashboard` wurde implementiert.
-- Die Aufgabenverwaltung bleibt nutzbar, wenn die Analytics API nicht erreichbar ist.
-- Beide APIs stellen interaktive Swagger-UI-Seiten bereit.
-- Die direkten und transitiven NuGet-Pakete wurden auf bekannte Sicherheitslücken geprüft.
-- Die vollständige Backend-Solution wurde erfolgreich mit `0 Warnung(en)` und `0 Fehler` gebaut.
-- Die Backend-Implementierung ist abgeschlossen.
-- Die Frontend-Implementierung ist der nächste Projektschritt.
-- Die Next.js-Anwendung wurde noch nicht implementiert.
+## API-Übersicht
 
-## Entwicklungsschritte
+### Task API
 
-- [Schritt 01 – UI-Design mit Google Stitch](docs/steps/01-google-stitch-design.md)
-- [Schritt 02 – Projektplanung und Architektur](docs/steps/02-project-planning.md)
-- [Schritt 03 – Backend-Solution-Struktur](docs/steps/03-backend-solution-structure.md)
-- [Schritt 04 – Task API](docs/steps/04-task-api.md)
-- [Schritt 05 – Analytics API und verteilte Kommunikation](docs/steps/05-analytics-distributed-communication.md)
-- [Schritt 06 – Swagger UI für beide APIs](docs/steps/06-swagger-ui.md)
+| Methode | Endpunkt | Beschreibung |
+| --- | --- | --- |
+| `GET` | `/api/tasks?status=&search=` | Aufgaben laden, filtern und durchsuchen |
+| `POST` | `/api/tasks` | Aufgabe erstellen |
+| `PUT` | `/api/tasks/{id}` | Aufgabe bearbeiten |
+| `PATCH` | `/api/tasks/{id}/toggle` | Abschlussstatus umschalten |
+| `DELETE` | `/api/tasks/{id}` | Aufgabe löschen |
+| `GET` | `/api/dashboard?strategy=basic` | Basic-Statistik laden |
+| `GET` | `/api/dashboard?strategy=weighted` | Weighted-Statistik laden |
 
-## Weitere Dokumentation
+### Analytics API
+
+| Methode | Endpunkt | Beschreibung |
+| --- | --- | --- |
+| `POST` | `/api/statistics?strategy=basic` | Basic-Statistik berechnen |
+| `POST` | `/api/statistics?strategy=weighted` | Weighted-Statistik berechnen |
+
+Die Analytics API wird ausschließlich von der Task API aufgerufen.
+
+---
+
+# Entwicklungsdokumentation
+
+Die vollständige Entstehung des Projekts ist in einzelnen Schritten dokumentiert. Jeder Schritt enthält den verwendeten Prompt, die zugehörigen Dateien, Screenshots, Prüfungen und das Ergebnis.
+
+| Schritt | Inhalt | Dokumentation | Prompt |
+| --- | --- | --- | --- |
+| 01 | UI-Design mit Google Stitch | [Schritt 01](docs/steps/01-google-stitch-design.md) | [Prompt 01](docs/prompts/01-google-stitch.md) |
+| 02 | Projektplanung und Architektur | [Schritt 02](docs/steps/02-project-planning.md) | [Prompt 02](docs/prompts/02-project-planning.md) |
+| 03 | Backend-Solution-Struktur | [Schritt 03](docs/steps/03-backend-solution-structure.md) | [Prompt 03](docs/prompts/03-backend-solution-structure.md) |
+| 04 | Task API und SQLite | [Schritt 04](docs/steps/04-task-api.md) | [Prompt 04](docs/prompts/04-task-api.md) |
+| 05 | Analytics API und verteilte Kommunikation | [Schritt 05](docs/steps/05-analytics-distributed-communication.md) | [Prompt 05](docs/prompts/05-analytics-distributed-communication.md) |
+| 06 | Swagger UI und OpenAPI | [Schritt 06](docs/steps/06-swagger-ui.md) | [Prompt 06](docs/prompts/06-swagger-ui.md) |
+| 07a | Next.js-Grundstruktur mit Cursor | [Schritt 07a](docs/steps/07a-cursor-frontend-structure.md) | [Prompt 07a](docs/prompts/07a-cursor-frontend-structure.md) |
+| 07b | Analyse der Stitch-Dateien mit Codex CLI | [Schritt 07b](docs/steps/07b-codex-stitch-analysis.md) | [Prompt 07b](docs/prompts/07b-codex-stitch-analysis.md) |
+| 07c | Frontend-Implementierung mit Codex CLI | [Schritt 07c](docs/steps/07c-codex-frontend-implementation.md) | [Prompt 07c](docs/prompts/07c-codex-frontend-implementation.md) |
+| 08 | Frontend-API-Integration und End-to-End-Prüfung | [Schritt 08](docs/steps/08-frontend-api-integration.md) | [Prompt 08](docs/prompts/08-codex-frontend-api-integration.md) |
+
+Weitere Dokumente:
 
 - [Systemarchitektur](docs/diagrams/system-architecture.md)
-- [Gespeicherte Prompts](docs/prompts/)
-- [Screenshots](docs/screenshots/)
-- [Google-Stitch-Ausgaben](stitch/)
+- [Google-Stitch-Analyse](docs/frontend/stitch-analysis.md)
+- [Alle gespeicherten Prompts](docs/prompts/)
+- [Screenshots und technische Nachweise](docs/screenshots/)
+- [Originale Google-Stitch-Ausgaben](stitch/)
+
+---
+
+## Finale Screenshots
+
+### Geladenes Dashboard
+
+![Geladenes Dashboard mit realen API-Daten](docs/screenshots/final/final-02-loaded-dashboard.png)
+
+### Create-Task-Modal
+
+![Geöffnetes Create-Task-Modal](docs/screenshots/final/final-01-create-task-modal.png)
+
+---
+
+## Fehlerverhalten der verteilten Anwendung
+
+Wenn die Analytics API nicht verfügbar ist:
+
+- bleibt die Task API erreichbar
+- bleiben Aufgaben und SQLite verfügbar
+- funktionieren Create, Edit, Toggle und Delete weiter
+- bleiben Suche und Statusfilter nutzbar
+- liefert der Dashboard-Endpunkt HTTP `503`
+- zeigt das Frontend einen Statistics Error State
+- können die Statistiken nach dem Neustart über `Retry` erneut geladen werden
+
+Verwendete Meldung:
+
+```text
+Statistics are temporarily unavailable. Your tasks can still be managed.
+```
+
+---
+
+## Build und Prüfung
+
+### Frontend
+
+```powershell
+cd frontend
+npm.cmd run lint
+npm.cmd run build
+```
+
+### Backend
+
+```powershell
+cd backend
+dotnet build TaskFlow.sln
+```
+
+Letztes geprüftes Ergebnis:
+
+```text
+Frontend lint: erfolgreich
+Frontend build: erfolgreich
+Backend build: 0 Warnungen, 0 Fehler
+```
+
+Zusätzlich wurden Aufgaben-CRUD, Suche, Filter, Basic- und Weighted-Strategie sowie der Ausfall und Neustart der Analytics API im Browser geprüft.
+
+---
+
+## Projektstruktur
+
+```text
+DistributedTaskFlow/
+├── backend/
+│   ├── TaskFlow.sln
+│   ├── TaskFlow.TaskApi/
+│   └── TaskFlow.AnalyticsApi/
+├── frontend/
+│   ├── app/
+│   ├── components/
+│   ├── lib/
+│   ├── public/
+│   └── styles/
+├── docs/
+│   ├── diagrams/
+│   ├── frontend/
+│   ├── prompts/
+│   ├── screenshots/
+│   └── steps/
+├── stitch/
+├── .gitignore
+└── README.md
+```
+
+---
+
+## Projektstatus
+
+DistributedTaskFlow ist funktional abgeschlossen.
+
+Der aktuelle Stand enthält:
+
+- vollständiges Aufgaben-CRUD
+- SQLite-Persistenz
+- separate Analytics API
+- Basic- und Weighted-Strategie
+- Swagger UI für beide APIs
+- responsives Next.js-Frontend
+- Suche und Statusfilter
+- Loading-, Empty- und Statistics-Error-Zustände
+- kontrolliertes Verhalten bei Ausfall der Analytics API
+- dokumentierte Prompts, Schritte und Screenshots
+- erfolgreiche Frontend- und Backend-Builds

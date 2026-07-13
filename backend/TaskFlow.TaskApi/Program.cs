@@ -7,6 +7,12 @@ using TaskFlow.TaskApi.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 const string frontendCorsPolicy = "NextJsFrontend";
+string[] frontendDevelopmentOrigins =
+[
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://172.27.176.1:3000"
+];
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -17,8 +23,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(frontendCorsPolicy, policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
-            .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE")
+        policy.WithOrigins(frontendDevelopmentOrigins)
+            .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .AllowAnyHeader();
     });
 });

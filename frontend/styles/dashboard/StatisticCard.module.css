@@ -1,0 +1,129 @@
+.card {
+  min-height: 136px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-card);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-card);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.card:hover {
+  border-color: var(--color-primary-container-strong);
+  box-shadow: 0 8px 24px rgb(15 23 42 / 0.08);
+  transform: translateY(-1px);
+}
+
+.cardTopline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.card h2 {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-label);
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-pill);
+}
+
+.value {
+  margin: var(--space-3) 0 var(--space-1);
+  color: var(--color-text);
+  font-size: var(--font-size-display);
+  line-height: var(--line-height-tight);
+  font-weight: 800;
+}
+
+.description {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-body-sm);
+}
+
+.primary .dot {
+  background: var(--color-primary);
+}
+
+.success .dot {
+  background: var(--color-success);
+}
+
+.warning .dot {
+  background: var(--color-warning);
+}
+
+.error .dot {
+  background: var(--color-error);
+}
+
+.disabled {
+  opacity: 0.55;
+}
+
+.loading {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.skeletonLabel,
+.skeletonValue,
+.skeletonText {
+  border-radius: var(--radius-pill);
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-soft),
+    var(--color-surface-container),
+    var(--color-surface-soft)
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeletonLabel {
+  width: 48%;
+  height: 14px;
+}
+
+.skeletonValue {
+  width: 34%;
+  height: 42px;
+}
+
+.skeletonText {
+  width: 66%;
+  height: 16px;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .skeletonLabel,
+  .skeletonValue,
+  .skeletonText {
+    animation: none;
+    transition: none;
+  }
+}

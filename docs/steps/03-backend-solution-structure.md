@@ -1,39 +1,58 @@
-# Schritt 03 - Backend-Solution-Struktur
+# Schritt 03 – Backend-Solution-Struktur
 
 ## Ziel
 
-Ziel dieses Schritts ist der Aufbau der initialen ASP.NET-Core-Backend-Struktur für DistributedTaskFlow. Dabei werden eine klassische Solution-Datei und zwei minimale Web-API-Projekte erstellt.
+In diesem Schritt wurde die technische Grundstruktur des Backends für **DistributedTaskFlow** erstellt.
 
-In diesem Schritt werden noch keine Anwendungsfunktionen implementiert.
+Ziel war es, eine klassische .NET-Solution mit zwei voneinander getrennten ASP.NET-Core-Web-API-Projekten aufzubauen:
 
-## Ausgangssituation
+- Task API
+- Analytics API
 
-Vor diesem Schritt waren bereits die Projektplanung, die Systemarchitektur und die Google-Stitch-Designreferenzen dokumentiert.
+Beide APIs sollten bereits als eigenständige Prozesse gestartet und über unterschiedliche lokale Ports erreicht werden können.
 
-Relevante Dokumente:
+In diesem Schritt wurden noch keine fachlichen Funktionen wie Aufgabenverwaltung, SQLite-Persistenz oder Statistikberechnung implementiert.
 
-- [Prompt 03](../prompts/03-backend-solution-structure.md)
-- [Systemarchitektur](../diagrams/system-architecture.md)
-- [Schritt 02 - Projektplanung und Architektur](02-project-planning.md)
+---
 
-Der vorhandene Ordner `backend/` war für die Backend-Struktur vorgesehen.
+## Verwendete Werkzeuge und Technologien
 
-## Verwendete Technologie
-
-- .NET SDK
-- ASP.NET Core Web API
+- Codex CLI
+- .NET CLI
+- .NET 10
 - C#
+- ASP.NET Core Web API
 - klassische `.sln`-Solution-Datei
+- PowerShell
 
-## Installierte .NET-SDK-Version
+---
 
-Die aktive .NET-SDK-Version ist:
+## Verwendeter Prompt
+
+Der vollständige Prompt dieses Schritts ist im Repository gespeichert:
+
+- [Prompt 03 – Backend-Solution-Struktur](../prompts/03-backend-solution-structure.md)
+
+Der Prompt definierte unter anderem:
+
+- die Erstellung einer klassischen Solution-Datei
+- die Erstellung von zwei getrennten Web-API-Projekten
+- die vorgesehenen Projektnamen
+- die lokalen Ports
+- die Entfernung nicht benötigter Template-Endpunkte
+- die Durchführung einer vollständigen Build-Prüfung
+
+---
+
+## Verwendete .NET-SDK-Version
+
+Zum Zeitpunkt der Durchführung war folgende .NET-SDK-Version aktiv:
 
 ```text
 10.0.301
 ```
 
-Zusätzlich wurden folgende SDKs gefunden:
+Zusätzlich waren auf dem Entwicklungssystem folgende SDK-Versionen installiert:
 
 ```text
 8.0.408
@@ -41,83 +60,337 @@ Zusätzlich wurden folgende SDKs gefunden:
 10.0.301
 ```
 
-## Erstellte Solution
+Die aktive Version wurde mit folgendem Befehl geprüft:
 
-Die folgende klassische Solution-Datei wurde erstellt:
+```powershell
+dotnet --version
+```
 
-- `backend/TaskFlow.sln`
+Alle Backend-Projekte verwenden:
 
-Die Solution enthält die beiden Backend-API-Projekte.
+```text
+net10.0
+```
 
-## Erstellte API-Projekte
+als Zielframework.
 
-Es wurden zwei minimale ASP.NET-Core-Web-API-Projekte erstellt:
+---
 
-- `backend/TaskFlow.TaskApi/`
-- `backend/TaskFlow.AnalyticsApi/`
+## Durchführung
 
-Beide Projekte verwenden `net10.0` als Zielframework.
+### 1. Backend-Verzeichnis verwenden
 
-## Geplante Verantwortung der Task API
+Die Backend-Projekte wurden im bereits vorgesehenen Verzeichnis erstellt:
 
-Die Task API soll später für folgende Aufgaben verantwortlich sein:
+```text
+backend/
+```
 
-- Aufgabenverwaltung
-- Eingabevalidierung
+Die resultierende Struktur sollte alle serverseitigen Projekte gemeinsam enthalten.
+
+---
+
+### 2. Klassische Solution-Datei erstellen
+
+Im Verzeichnis `backend/` wurde eine klassische .NET-Solution erstellt:
+
+```powershell
+cd backend
+
+dotnet new sln `
+  --name TaskFlow `
+  --format sln
+```
+
+Dadurch entstand folgende Datei:
+
+```text
+backend/TaskFlow.sln
+```
+
+Die Solution dient als gemeinsame Verwaltungseinheit für beide API-Projekte.
+
+---
+
+### 3. Task-API-Projekt erstellen
+
+Für die zentrale Aufgabenverwaltung wurde ein ASP.NET-Core-Web-API-Projekt erstellt:
+
+```powershell
+dotnet new webapi `
+  --name TaskFlow.TaskApi `
+  --framework net10.0
+```
+
+Das Projekt befindet sich unter:
+
+```text
+backend/TaskFlow.TaskApi/
+```
+
+Die Task API wurde als eigenständiges Webprojekt angelegt und sollte später folgende Verantwortlichkeiten übernehmen:
+
+- Aufgaben laden
+- Aufgaben erstellen
+- Aufgaben bearbeiten
+- Aufgaben löschen
+- Eingaben validieren
 - SQLite-Persistenz
 - Kommunikation mit der Analytics API
 
-Diese Funktionen wurden in diesem Schritt noch nicht implementiert.
+Diese fachlichen Funktionen wurden in Schritt 03 noch nicht umgesetzt.
 
-Der aktuelle Root-Endpunkt gibt nur folgende Antwort zurück:
+---
+
+### 4. Analytics-API-Projekt erstellen
+
+Für die spätere Statistikberechnung wurde ein zweites ASP.NET-Core-Web-API-Projekt erstellt:
+
+```powershell
+dotnet new webapi `
+  --name TaskFlow.AnalyticsApi `
+  --framework net10.0
+```
+
+Das Projekt befindet sich unter:
+
+```text
+backend/TaskFlow.AnalyticsApi/
+```
+
+Die Analytics API sollte später folgende Aufgaben übernehmen:
+
+- Aufgabendaten von der Task API empfangen
+- Basic-Statistiken berechnen
+- gewichtete Statistiken berechnen
+- Ergebnisse als JSON zurückgeben
+
+Auch diese Statistiklogik war noch nicht Bestandteil dieses Schritts.
+
+---
+
+### 5. Projekte zur Solution hinzufügen
+
+Beide Web-API-Projekte wurden in die gemeinsame Solution aufgenommen:
+
+```powershell
+dotnet sln TaskFlow.sln add `
+  TaskFlow.TaskApi\TaskFlow.TaskApi.csproj
+
+dotnet sln TaskFlow.sln add `
+  TaskFlow.AnalyticsApi\TaskFlow.AnalyticsApi.csproj
+```
+
+Die Solution enthielt anschließend:
+
+```text
+TaskFlow.sln
+├── TaskFlow.TaskApi
+└── TaskFlow.AnalyticsApi
+```
+
+Dadurch konnten beide Projekte gemeinsam gebaut werden.
+
+---
+
+## Vereinfachung der Template-Projekte
+
+Die vom Web-API-Template erzeugten Beispielinhalte wurden nicht als Grundlage für die spätere Anwendung verwendet.
+
+Insbesondere wurden die standardmäßigen WeatherForecast-Inhalte aus den Einstiegspunkten entfernt:
+
+- WeatherForecast-Endpunkt
+- WeatherForecast-Datenmodell
+- Beispielarray mit Wetterdaten
+- nicht benötigte Beispielausgaben
+
+Anstelle der Template-Endpunkte erhielt jede API zunächst nur einen einfachen Root-Endpunkt.
+
+Die vorhandenen `.http`-Dateien blieben als lokale Request-Dateien im jeweiligen Projekt erhalten und konnten später für manuelle HTTP-Anfragen verwendet werden.
+
+---
+
+## Root-Endpunkt der Task API
+
+In der Task API wurde ein einfacher Root-Endpunkt eingerichtet.
+
+Aufruf:
+
+```text
+GET /
+```
+
+Antwort:
 
 ```text
 TaskFlow Task API is running.
 ```
 
-## Geplante Verantwortung der Analytics API
+Dieser Endpunkt diente ausschließlich dazu zu prüfen, ob der Task-API-Prozess korrekt gestartet wurde.
 
-Die Analytics API soll später Aufgabenstatistiken berechnen.
+Zu diesem Zeitpunkt existierten noch keine Business-Endpunkte wie:
 
-Diese Statistiklogik wurde in diesem Schritt noch nicht implementiert.
+```text
+GET /api/tasks
+POST /api/tasks
+PUT /api/tasks/{id}
+PATCH /api/tasks/{id}/toggle
+DELETE /api/tasks/{id}
+```
 
-Der aktuelle Root-Endpunkt gibt nur folgende Antwort zurück:
+Diese wurden erst in einem späteren Schritt implementiert.
+
+---
+
+## Root-Endpunkt der Analytics API
+
+Auch die Analytics API erhielt zunächst nur einen einfachen Root-Endpunkt.
+
+Aufruf:
+
+```text
+GET /
+```
+
+Antwort:
 
 ```text
 TaskFlow Analytics API is running.
 ```
 
-## Konfigurierte Ports
+Der Root-Endpunkt bestätigte, dass die Analytics API unabhängig von der Task API gestartet werden konnte.
 
-Die lokalen HTTP-Entwicklungsports wurden über die jeweiligen `launchSettings.json`-Dateien konfiguriert:
+Eine Statistikberechnung war zu diesem Zeitpunkt noch nicht vorhanden.
 
-| Projekt | Port | URL |
-| --- | --- | --- |
-| TaskFlow.TaskApi | 5001 | `http://localhost:5001` |
-| TaskFlow.AnalyticsApi | 5002 | `http://localhost:5002` |
+---
 
-HTTPS wurde in diesem Schritt nicht konfiguriert.
+## Konfiguration der lokalen Ports
 
-## Entfernte Template-Inhalte
+Für beide APIs wurden feste lokale HTTP-Ports über die jeweiligen `launchSettings.json`-Dateien konfiguriert.
 
-Aus beiden Web-API-Projekten wurden die generierten Beispielinhalte entfernt:
+| Projekt | Port | Lokale Adresse |
+| --- | ---: | --- |
+| TaskFlow.TaskApi | `5001` | `http://localhost:5001` |
+| TaskFlow.AnalyticsApi | `5002` | `http://localhost:5002` |
 
-- `WeatherForecast`-Endpoint
-- `WeatherForecast`-Record
-- Beispiel-Array für Wetterdaten
-- generierte `.http`-Beispielrequest-Dateien
+Die Trennung der Ports war wichtig, weil beide APIs später gleichzeitig als unabhängige Prozesse laufen sollten.
 
-Die Projekte enthalten aktuell keine Business-Endpunkte.
+In diesem Schritt wurde bewusst nur HTTP verwendet.
 
-## Ausgeführte Build-Prüfung
+HTTPS war nicht Bestandteil der lokalen Projektkonfiguration.
 
-Die vollständige Backend-Solution wurde mit folgendem Befehl gebaut:
+---
+
+## APIs lokal starten
+
+### Task API
+
+Die Task API konnte mit folgendem Befehl gestartet werden:
+
+```powershell
+dotnet run `
+  --project TaskFlow.TaskApi\TaskFlow.TaskApi.csproj
+```
+
+Anschließend war der Root-Endpunkt unter folgender Adresse erreichbar:
 
 ```text
+http://localhost:5001
+```
+
+---
+
+### Analytics API
+
+Die Analytics API konnte in einem zweiten Terminal gestartet werden:
+
+```powershell
+dotnet run `
+  --project TaskFlow.AnalyticsApi\TaskFlow.AnalyticsApi.csproj
+```
+
+Anschließend war der Root-Endpunkt unter folgender Adresse erreichbar:
+
+```text
+http://localhost:5002
+```
+
+Die beiden Prozesse liefen unabhängig voneinander.
+
+---
+
+## Erstellte Projektstruktur
+
+Nach Abschluss dieses Schritts bestand die Backend-Struktur aus:
+
+```text
+backend/
+├── TaskFlow.sln
+├── TaskFlow.TaskApi/
+│   ├── Properties/
+│   │   └── launchSettings.json
+│   ├── appsettings.json
+│   ├── appsettings.Development.json
+│   ├── Program.cs
+│   ├── TaskFlow.TaskApi.csproj
+│   └── TaskFlow.TaskApi.http
+└── TaskFlow.AnalyticsApi/
+    ├── Properties/
+    │   └── launchSettings.json
+    ├── appsettings.json
+    ├── appsettings.Development.json
+    ├── Program.cs
+    ├── TaskFlow.AnalyticsApi.csproj
+    └── TaskFlow.AnalyticsApi.http
+```
+
+Ordner wie `bin/` und `obj/` wurden nicht dokumentiert, da sie automatisch während des Builds erzeugt werden.
+
+---
+
+## Zugehörige Dateien
+
+### Solution
+
+- [`TaskFlow.sln`](../../backend/TaskFlow.sln)
+
+### Task API
+
+- [`TaskFlow.TaskApi.csproj`](../../backend/TaskFlow.TaskApi/TaskFlow.TaskApi.csproj)
+- [`Program.cs`](../../backend/TaskFlow.TaskApi/Program.cs)
+- [`appsettings.json`](../../backend/TaskFlow.TaskApi/appsettings.json)
+- [`appsettings.Development.json`](../../backend/TaskFlow.TaskApi/appsettings.Development.json)
+- [`launchSettings.json`](../../backend/TaskFlow.TaskApi/Properties/launchSettings.json)
+- [`TaskFlow.TaskApi.http`](../../backend/TaskFlow.TaskApi/TaskFlow.TaskApi.http)
+
+### Analytics API
+
+- [`TaskFlow.AnalyticsApi.csproj`](../../backend/TaskFlow.AnalyticsApi/TaskFlow.AnalyticsApi.csproj)
+- [`Program.cs`](../../backend/TaskFlow.AnalyticsApi/Program.cs)
+- [`appsettings.json`](../../backend/TaskFlow.AnalyticsApi/appsettings.json)
+- [`appsettings.Development.json`](../../backend/TaskFlow.AnalyticsApi/appsettings.Development.json)
+- [`launchSettings.json`](../../backend/TaskFlow.AnalyticsApi/Properties/launchSettings.json)
+- [`TaskFlow.AnalyticsApi.http`](../../backend/TaskFlow.AnalyticsApi/TaskFlow.AnalyticsApi.http)
+
+---
+
+## Build-Prüfung
+
+Nach Erstellung und Konfiguration der beiden Projekte wurde die vollständige Solution gebaut.
+
+Ausgeführt im Verzeichnis:
+
+```text
+backend/
+```
+
+Befehl:
+
+```powershell
 dotnet build TaskFlow.sln
 ```
 
-Build-Ergebnis:
+Ergebnis:
 
 ```text
 Der Buildvorgang wurde erfolgreich ausgeführt.
@@ -125,24 +398,73 @@ Der Buildvorgang wurde erfolgreich ausgeführt.
 0 Fehler
 ```
 
-## Erstellte oder aktualisierte Dateien
+Damit wurde bestätigt, dass:
 
-- `backend/TaskFlow.sln`
-- `backend/TaskFlow.TaskApi/TaskFlow.TaskApi.csproj`
-- `backend/TaskFlow.TaskApi/Program.cs`
-- `backend/TaskFlow.TaskApi/appsettings.json`
-- `backend/TaskFlow.TaskApi/appsettings.Development.json`
-- `backend/TaskFlow.TaskApi/Properties/launchSettings.json`
-- `backend/TaskFlow.AnalyticsApi/TaskFlow.AnalyticsApi.csproj`
-- `backend/TaskFlow.AnalyticsApi/Program.cs`
-- `backend/TaskFlow.AnalyticsApi/appsettings.json`
-- `backend/TaskFlow.AnalyticsApi/appsettings.Development.json`
-- `backend/TaskFlow.AnalyticsApi/Properties/launchSettings.json`
-- `docs/steps/03-backend-solution-structure.md`
-- `README.md`
+- die Solution-Datei gültig ist
+- beide Projekte korrekt registriert sind
+- beide Projekte mit `net10.0` kompiliert werden können
+- keine fehlenden Abhängigkeiten vorhanden sind
+- die Grundstruktur technisch funktionsfähig ist
+
+---
+
+## Screenshots und Nachweise
+
+Für diesen Schritt wurde nach der bekannten Projektstruktur kein eigener Screenshot gespeichert.
+
+Der technische Nachweis erfolgt durch:
+
+- den gespeicherten Prompt
+- die klassische Solution-Datei
+- die beiden Web-API-Projekte
+- die konfigurierten Ports
+- die Root-Endpunkte
+- den erfolgreichen Build mit null Warnungen und null Fehlern
+
+---
+
+## Nicht Bestandteil dieses Schritts
+
+Folgende Funktionen wurden bewusst noch nicht implementiert:
+
+- Aufgabenmodelle
+- Aufgaben-CRUD
+- Eingabevalidierung
+- Repository Pattern
+- SQLite-Datenbank
+- Task Service
+- Analytics-Modelle
+- Statistikstrategien
+- HTTP-Kommunikation zwischen den APIs
+- Dashboard-Endpunkt
+- Swagger UI
+- CORS-Konfiguration für das Frontend
+- Next.js-Frontend
+
+Schritt 03 diente ausschließlich dem Aufbau einer sauberen und startfähigen Backend-Grundstruktur.
+
+---
 
 ## Ergebnis
 
-Die initiale Backend-Solution-Struktur wurde erstellt. Beide ASP.NET-Core-Web-API-Projekte sind in der Solution registriert, starten über jeweils einen einfachen Root-Endpunkt und verwenden die konfigurierten lokalen HTTP-Ports.
+Am Ende dieses Schritts war die initiale Backend-Struktur vollständig vorhanden.
 
-Die komplette Backend-Solution wurde erfolgreich gebaut. Es wurden keine Aufgabenverwaltung, keine Statistiklogik, keine SQLite-Anbindung, keine HTTP-Clients und keine zusätzlichen Projekte implementiert.
+Erstellt wurden:
+
+- eine klassische `TaskFlow.sln`
+- ein eigenständiges Task-API-Projekt
+- ein eigenständiges Analytics-API-Projekt
+- zwei getrennte lokale HTTP-Ports
+- ein Root-Endpunkt pro API
+- eine gemeinsame Build-Struktur
+
+Beide APIs konnten unabhängig gestartet werden.
+
+Die vollständige Backend-Solution wurde erfolgreich mit folgendem Ergebnis gebaut:
+
+```text
+0 Warnung(en)
+0 Fehler
+```
+
+Damit war die technische Grundlage für die anschließende Implementierung der Task API und der verteilten Analytics-Kommunikation geschaffen.

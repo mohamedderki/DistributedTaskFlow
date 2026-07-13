@@ -9,10 +9,12 @@ public sealed class SqliteTaskRepository : ITaskRepository
     private const string DateFormat = "yyyy-MM-dd";
     private readonly string _connectionString;
 
-    public SqliteTaskRepository(IConfiguration configuration)
+    public SqliteTaskRepository(IConfiguration configuration, IHostEnvironment environment)
     {
-        _connectionString = configuration.GetConnectionString("TaskFlowDatabase")
+        var connectionString = configuration.GetConnectionString("TaskFlowDatabase")
             ?? throw new InvalidOperationException("Connection string 'TaskFlowDatabase' is missing.");
+
+        _connectionString = ResolveConnectionString(connectionString, environment.ContentRootPath);
 
         InitializeDatabase();
     }
@@ -141,6 +143,18 @@ public sealed class SqliteTaskRepository : ITaskRepository
     }
 
     private SqliteConnection CreateConnection() => new(_connectionString);
+
+    private static string ResolveConnectionString(string connectionString, string contentRootPath)
+    {
+        var builder = new SqliteConnectionStringBuilder(connectionString);
+
+        if (!string.IsNullOrWhiteSpace(builder.DataSource) && !Path.IsPathRooted(builder.DataSource))
+        {
+            builder.DataSource = Path.GetFullPath(Path.Combine(contentRootPath, builder.DataSource));
+        }
+
+        return builder.ToString();
+    }
 
     private static void AddTaskParameters(SqliteCommand command, TaskItem task, bool includeId, bool includeCreatedAtUtc)
     {

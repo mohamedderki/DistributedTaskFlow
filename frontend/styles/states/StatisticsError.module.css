@@ -1,0 +1,69 @@
+.errorState {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  border: 1px solid #b8c9f0;
+  border-radius: var(--radius-lg);
+  background: #dce9ff;
+  padding: var(--space-4);
+}
+
+.message {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  color: var(--color-text);
+}
+
+.message span {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-primary);
+  font-weight: 900;
+}
+
+.message p {
+  margin: 0;
+}
+
+.errorState button {
+  align-self: flex-start;
+  min-height: 38px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-card);
+  color: var(--color-text);
+  padding: 0 var(--space-4);
+  font-weight: 800;
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.errorState button:hover {
+  border-color: var(--color-primary-container-strong);
+  color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+@media (min-width: 768px) {
+  .errorState {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .errorState button {
+    transition: none;
+  }
+}
