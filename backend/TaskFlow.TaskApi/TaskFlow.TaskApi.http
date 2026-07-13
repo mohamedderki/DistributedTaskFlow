@@ -17,6 +17,15 @@ Content-Type: application/json
 ### Retrieve all tasks
 GET {{TaskFlow_TaskApi_HostAddress}}/api/tasks
 
+### Retrieve dashboard statistics
+GET {{TaskFlow_TaskApi_HostAddress}}/api/dashboard
+
+### Retrieve dashboard statistics with basic strategy
+GET {{TaskFlow_TaskApi_HostAddress}}/api/dashboard?strategy=basic
+
+### Retrieve dashboard statistics with weighted strategy
+GET {{TaskFlow_TaskApi_HostAddress}}/api/dashboard?strategy=weighted
+
 ### Filter open tasks
 GET {{TaskFlow_TaskApi_HostAddress}}/api/tasks?status=open
 

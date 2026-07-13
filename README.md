@@ -89,9 +89,16 @@ Das Projekt demonstriert folgende Prinzipien und Patterns:
 - Der `TaskService` wurde als Service Layer mit zentraler Validierung implementiert.
 - Dependency Injection wurde für Repository und Service konfiguriert.
 - Die Task-Management-Endpunkte unter `/api/tasks` wurden implementiert.
-- Die Analytics API ist noch nicht mit der Task API verbunden.
+- Schritt 05: Die Analytics API wurde implementiert.
+- Das Strategy Pattern wurde für die Statistikberechnung umgesetzt.
+- Basic- und Weighted-Statistiken werden unterstützt.
+- Die Task API kommuniziert mit der Analytics API über HTTP und JSON.
+- Der Analytics Client wurde über Dependency Injection registriert.
+- Der verteilte Dashboard-Endpunkt `/api/dashboard` wurde implementiert.
+- Die Task API bleibt nutzbar, wenn die Analytics API nicht verfügbar ist.
+- Die vollständige Backend-Solution wurde erfolgreich gebaut.
+- Swagger UI wird im nächsten Backend-Schritt ergänzt.
 - Die Next.js-Anwendung wurde noch nicht erstellt.
-- Die Statistikberechnung wurde noch nicht implementiert.
 
 ## Dokumentation
 
@@ -101,3 +108,4 @@ Das Projekt demonstriert folgende Prinzipien und Patterns:
 - [Systemarchitektur](docs/diagrams/system-architecture.md)
 - [Entwicklungsschritt 01: UI-Design mit Google Stitch](docs/steps/01-google-stitch-design.md)
 - [Entwicklungsschritt 02: Projektplanung und Architektur](docs/steps/02-project-planning.md)
+- [Entwicklungsschritt 05: Analytics API und verteilte Kommunikation](docs/steps/05-analytics-distributed-communication.md)

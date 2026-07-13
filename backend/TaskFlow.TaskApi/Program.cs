@@ -24,6 +24,14 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSingleton<ITaskRepository, SqliteTaskRepository>();
 builder.Services.AddScoped<TaskService>();
+builder.Services.AddHttpClient<IAnalyticsClient, AnalyticsClient>((serviceProvider, client) =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var baseAddress = configuration["AnalyticsApi:BaseAddress"]
+        ?? throw new InvalidOperationException("Analytics API base address is not configured.");
+
+    client.BaseAddress = new Uri(baseAddress);
+});
 
 var app = builder.Build();
 
@@ -80,6 +88,41 @@ tasks.MapDelete("{id:int}", async (
     return ToHttpResult(result, _ => Results.NoContent());
 });
 
+app.MapGet("/api/dashboard", async (
+    string? strategy,
+    TaskService taskService,
+    IAnalyticsClient analyticsClient,
+    CancellationToken cancellationToken) =>
+{
+    var normalizedStrategy = NormalizeAnalyticsStrategy(strategy);
+    if (normalizedStrategy is null)
+    {
+        return Results.BadRequest(new { message = "Strategy must be one of: basic, weighted." });
+    }
+
+    var tasksResult = await taskService.GetTasksAsync(status: null, search: null, cancellationToken);
+    if (!tasksResult.IsSuccess || tasksResult.Value is null)
+    {
+        return Results.Problem("Tasks could not be loaded for dashboard statistics.");
+    }
+
+    try
+    {
+        var statistics = await analyticsClient.CalculateStatisticsAsync(
+            tasksResult.Value,
+            normalizedStrategy,
+            cancellationToken);
+
+        return Results.Ok(statistics);
+    }
+    catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException or AnalyticsClientException)
+    {
+        return Results.Json(
+            new { message = "Statistics are temporarily unavailable. Your tasks can still be managed." },
+            statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
+});
+
 app.Run();
 
 static IResult ToHttpResult<T>(TaskServiceResult<T> result, Func<T, IResult> successResult)
@@ -95,4 +138,15 @@ static IResult ToHttpResult<T>(TaskServiceResult<T> result, Func<T, IResult> suc
         TaskServiceError.NotFound => Results.NotFound(new { message = result.ErrorMessage }),
         _ => Results.Problem("The request could not be completed.")
     };
+}
+
+static string? NormalizeAnalyticsStrategy(string? strategy)
+{
+    if (string.IsNullOrWhiteSpace(strategy))
+    {
+        return "basic";
+    }
+
+    var normalizedStrategy = strategy.Trim().ToLowerInvariant();
+    return normalizedStrategy is "basic" or "weighted" ? normalizedStrategy : null;
 }

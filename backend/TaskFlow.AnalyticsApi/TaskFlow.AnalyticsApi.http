@@ -1,0 +1,60 @@
+@TaskFlow_AnalyticsApi_HostAddress = http://localhost:5002
+
+### Root endpoint
+GET {{TaskFlow_AnalyticsApi_HostAddress}}/
+
+### Basic statistics
+POST {{TaskFlow_AnalyticsApi_HostAddress}}/api/statistics
+Content-Type: application/json
+
+{
+  "tasks": [
+    {
+      "priority": "High",
+      "dueDate": "2026-07-10",
+      "isCompleted": false
+    },
+    {
+      "priority": "Medium",
+      "dueDate": "2026-07-20",
+      "isCompleted": false
+    },
+    {
+      "priority": "Low",
+      "dueDate": "2026-07-22",
+      "isCompleted": true
+    }
+  ]
+}
+
+### Weighted statistics
+POST {{TaskFlow_AnalyticsApi_HostAddress}}/api/statistics?strategy=weighted
+Content-Type: application/json
+
+{
+  "tasks": [
+    {
+      "priority": "High",
+      "dueDate": "2026-07-10",
+      "isCompleted": false
+    },
+    {
+      "priority": "Medium",
+      "dueDate": "2026-07-20",
+      "isCompleted": false
+    },
+    {
+      "priority": "Low",
+      "dueDate": "2026-07-22",
+      "isCompleted": true
+    }
+  ]
+}
+
+### Unknown strategy
+POST {{TaskFlow_AnalyticsApi_HostAddress}}/api/statistics?strategy=unknown
+Content-Type: application/json
+
+{
+  "tasks": []
+}
